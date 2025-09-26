@@ -1,0 +1,121 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway:8080']
+    scrape_interval: 5s
+
+  # Java Microservices
+  - job_name: 'user-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['user-service:8080']
+    scrape_interval: 5s
+
+  - job_name: 'trading-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['trading-service:8080']
+    scrape_interval: 5s
+
+  - job_name: 'wallet-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['wallet-service:8080']
+    scrape_interval: 5s
+
+  - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['notification-service:8080']
+    scrape_interval: 5s
+
+  - job_name: 'analytics-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['analytics-service:8080']
+    scrape_interval: 5s
+
+  - job_name: 'message-relay'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['message-relay:8080']
+    scrape_interval: 5s
+
+  # Haskell Services
+  - job_name: 'security-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['security-service:8081']
+    scrape_interval: 5s
+
+  - job_name: 'mev-protection-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['mev-protection-service:8082']
+    scrape_interval: 5s
+
+  - job_name: 'economic-analysis-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['economic-analysis-service:8083']
+    scrape_interval: 5s
+
+  # Rust Services
+  - job_name: 'solana-gateway-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['solana-gateway-service:8084']
+    scrape_interval: 5s
+
+  - job_name: 'cross-chain-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['cross-chain-service:8085']
+    scrape_interval: 5s
+
+  - job_name: 'oracle-service'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['oracle-service:8086']
+    scrape_interval: 5s
+
+  # Infrastructure Services
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9092']
+    scrape_interval: 30s
+
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['consul:8500']
+    scrape_interval: 30s

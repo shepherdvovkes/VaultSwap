@@ -1,0 +1,76 @@
+[package]
+name = "solana-gateway-service"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web framework
+axum = { version = "0.7", features = ["macros", "tracing"] }
+tokio = { version = "1.0", features = ["full"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+
+# Redis
+redis = { version = "0.24", features = ["tokio-comp"] }
+
+# Kafka
+rdkafka = { version = "0.36", features = ["cmake-build"] }
+
+# Solana SDK
+solana-client = "1.17"
+solana-sdk = "1.17"
+solana-program = "1.17"
+anchor-client = "0.28"
+
+# Cryptography
+ed25519-dalek = "2.0"
+sha2 = "0.10"
+bs58 = "0.5"
+
+# Logging and tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Metrics
+prometheus = "0.13"
+metrics = "0.22"
+metrics-exporter-prometheus = "0.12"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Configuration
+config = "0.14"
+clap = { version = "4.0", features = ["derive"] }
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.0", features = ["v4", "serde"] }
+
+# Async utilities
+futures = "0.3"
+
+# JSON Web Tokens
+jsonwebtoken = "9.0"
+
+# Rate limiting
+governor = "0.6"
+
+# Caching
+moka = { version = "0.12", features = ["future"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

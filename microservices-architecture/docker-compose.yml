@@ -1,0 +1,352 @@
+version: '3.8'
+
+services:
+  # Infrastructure Services
+  postgres:
+    image: postgres:15-alpine
+    container_name: ultrana-postgres
+    environment:
+      POSTGRES_DB: ultrana_dex
+      POSTGRES_USER: ultrana
+      POSTGRES_PASSWORD: ultrana_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ultrana-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ultrana-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ultrana-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: ultrana-kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - ultrana-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: ultrana-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - ultrana-network
+
+  consul:
+    image: consul:1.16
+    container_name: ultrana-consul
+    command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0 -bind=0.0.0.0
+    ports:
+      - "8500:8500"
+    networks:
+      - ultrana-network
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ultrana-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - ultrana-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ultrana-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - ultrana-network
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: ultrana-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - ultrana-network
+
+  # Java Microservices
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: ultrana-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+    depends_on:
+      - consul
+      - redis
+    networks:
+      - ultrana-network
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: ultrana-user-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+      - consul
+    networks:
+      - ultrana-network
+
+  trading-service:
+    build:
+      context: ./trading-service
+      dockerfile: Dockerfile
+    container_name: ultrana-trading-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  wallet-service:
+    build:
+      context: ./wallet-service
+      dockerfile: Dockerfile
+    container_name: ultrana-wallet-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: ultrana-notification-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+      dockerfile: Dockerfile
+    container_name: ultrana-analytics-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  # Haskell Services
+  security-service:
+    build:
+      context: ./haskell-services/security-service
+      dockerfile: Dockerfile
+    container_name: ultrana-security-service
+    ports:
+      - "8081:8080"
+    environment:
+      DATABASE_URL: postgresql://ultrana:ultrana_password@postgres:5432/ultrana_dex
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ultrana-network
+
+  mev-protection-service:
+    build:
+      context: ./haskell-services/mev-protection-service
+      dockerfile: Dockerfile
+    container_name: ultrana-mev-protection-service
+    ports:
+      - "8082:8080"
+    environment:
+      DATABASE_URL: postgresql://ultrana:ultrana_password@postgres:5432/ultrana_dex
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - ultrana-network
+
+  economic-analysis-service:
+    build:
+      context: ./haskell-services/economic-analysis-service
+      dockerfile: Dockerfile
+    container_name: ultrana-economic-analysis-service
+    ports:
+      - "8083:8080"
+    environment:
+      DATABASE_URL: postgresql://ultrana:ultrana_password@postgres:5432/ultrana_dex
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ultrana-network
+
+  # Rust Services
+  solana-gateway-service:
+    build:
+      context: ./rust-services/solana-gateway-service
+      dockerfile: Dockerfile
+    container_name: ultrana-solana-gateway-service
+    ports:
+      - "8084:8080"
+    environment:
+      DATABASE_URL: postgresql://ultrana:ultrana_password@postgres:5432/ultrana_dex
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SOLANA_RPC_URL: https://api.mainnet-beta.solana.com
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - ultrana-network
+
+  cross-chain-service:
+    build:
+      context: ./rust-services/cross-chain-service
+      dockerfile: Dockerfile
+    container_name: ultrana-cross-chain-service
+    ports:
+      - "8085:8080"
+    environment:
+      DATABASE_URL: postgresql://ultrana:ultrana_password@postgres:5432/ultrana_dex
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - ultrana-network
+
+  oracle-service:
+    build:
+      context: ./rust-services/oracle-service
+      dockerfile: Dockerfile
+    container_name: ultrana-oracle-service
+    ports:
+      - "8086:8080"
+    environment:
+      DATABASE_URL: postgresql://ultrana:ultrana_password@postgres:5432/ultrana_dex
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    networks:
+      - ultrana-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  grafana_data:
+
+networks:
+  ultrana-network:
+    driver: bridge
