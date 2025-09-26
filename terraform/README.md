@@ -1,379 +1,457 @@
-# DEX Attack Simulation Environment
+# VaultSwap DEX Infrastructure as Code
 
-A comprehensive Terraform-based attack simulation environment for testing DEX security measures against various attack vectors including MEV attacks, flash loan attacks, and oracle manipulation.
+This Terraform configuration provides a comprehensive, multi-environment infrastructure setup for the VaultSwap DEX platform, supporting testing, staging, and production environments with cross-platform compatibility.
 
-## Overview
+## 🏗️ Architecture Overview
 
-This environment provides a complete testing infrastructure to validate the security measures outlined in the Secure DEX Development Plan. It simulates real-world attack scenarios to test the effectiveness of security implementations.
+The infrastructure is designed with security-first principles and includes:
 
-## Architecture
+- **Multi-Environment Support**: Testing, Staging, Production
+- **Multi-OS Support**: Linux, Windows, macOS
+- **Cloud Provider Agnostic**: AWS, Azure, GCP, Local
+- **Security by Design**: Encryption, monitoring, compliance
+- **Cost Optimization**: Spot instances, auto-scaling, scheduled shutdowns
+- **High Availability**: Load balancing, auto-scaling, multi-AZ deployment
+
+## 📁 Project Structure
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Attack Simulation Environment            │
-├─────────────────────────────────────────────────────────────┤
-│  MEV Attacks          │  Flash Loan Attacks  │  Oracle Attacks │
-│  - Sandwich           │  - Price Manipulation │  - Price Flash   │
-│  - Front Running      │  - Arbitrage Exploit  │  - Oracle Delay  │
-│  - Back Running       │  - Liquidity Drain    │  - Cross-Chain   │
-│  - Arbitrage          │  - Governance Attack  │  - Governance    │
-├─────────────────────────────────────────────────────────────┤
-│                    Monitoring & Logging                     │
-│  - Prometheus         │  - Grafana           │  - Elasticsearch │
-│  - AlertManager       │  - Kibana            │  - Custom Dashboards │
-├─────────────────────────────────────────────────────────────┤
-│                    Security Testing                         │
-│  - Automated Tests    │  - Performance Tests │  - Response Time │
-│  - Throughput Tests   │  - Scalability Tests │  - Health Checks │
-└─────────────────────────────────────────────────────────────┘
+terraform/
+├── environments.tf              # Main environment configuration
+├── versions.tf                 # Terraform and provider versions
+├── outputs.tf                  # Output definitions
+├── terraform.tfvars.example    # Example variables file
+├── README.md                   # This file
+├── deploy.sh                   # Deployment script
+└── modules/                    # Reusable infrastructure modules
+    ├── vpc/                    # VPC and networking
+    ├── security-groups/       # Security group configurations
+    ├── ec2-instances/          # EC2 instances with multi-OS support
+    ├── rds/                    # Database configurations
+    ├── load-balancer/          # Load balancer setup
+    ├── monitoring/             # Monitoring and logging
+    ├── backup/                 # Backup and disaster recovery
+    ├── security/               # Security and compliance
+    └── cost-optimization/      # Cost optimization features
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Python 3.11+
-- Terraform 1.0+
-- Linux environment (tested on Ubuntu 20.04+)
+- Terraform >= 1.0
+- AWS CLI configured (for AWS deployment)
+- Docker (for local development)
+- Git
 
-### Installation
-
-1. **Clone and Setup**
-   ```bash
-   cd /home/vovkes/VaultSwap/terraform
-   terraform init
-   ```
-
-2. **Deploy Infrastructure**
-   ```bash
-   terraform apply
-   ```
-
-3. **Start Attack Simulation Environment**
-   ```bash
-   docker-compose up -d
-   ```
-
-4. **Run Attack Simulations**
-   ```bash
-   ./attack-simulations/scripts/run_attack_simulation.sh
-   ```
-
-## Monitoring Dashboards
-
-Once deployed, access the monitoring dashboards:
-
-- **Prometheus**: http://localhost:9090
-- **Grafana**: http://localhost:3000 (admin/admin)
-- **Elasticsearch**: http://localhost:9200
-- **Kibana**: http://localhost:5601
-
-## Configuration
-
-### Attack Simulation Configuration
-
-Each attack type has its own configuration file:
-
-- **MEV Attacks**: `attack-simulations/mev-attacks/config.json`
-- **Flash Loan Attacks**: `attack-simulations/flash-loan-attacks/config.json`
-- **Oracle Manipulation**: `attack-simulations/oracle-manipulation/config.json`
-
-### Monitoring Configuration
-
-- **Prometheus**: `attack-simulations/monitoring/prometheus.yml`
-- **Grafana**: `attack-simulations/monitoring/grafana-dashboard.json`
-- **AlertManager**: `attack-simulations/monitoring/alertmanager.yml`
-
-## Testing
-
-### Automated Security Tests
-
-Run comprehensive security tests:
+### 1. Clone and Setup
 
 ```bash
-python3 attack-simulations/scripts/security_test_runner.py --config config.json
+git clone <repository-url>
+cd VaultSwap/terraform
+cp terraform.tfvars.example terraform.tfvars
 ```
 
-### Performance Tests
+### 2. Configure Variables
 
-Test system performance under attack load:
+Edit `terraform.tfvars` with your specific requirements:
+
+```hcl
+# Environment Configuration
+environment = "testing"
+cloud_provider = "aws"
+region = "us-west-2"
+
+# Operating Systems
+operating_systems = ["linux", "windows", "macos"]
+
+# Instance Configuration
+instance_count = 2
+instance_type = "t3.medium"
+storage_size = 50
+
+# Security Configuration
+security_level = "standard"
+monitoring_level = "basic"
+
+# Cost Optimization
+cost_optimization = true
+enable_spot_instances = true
+enable_auto_scaling = true
+```
+
+### 3. Deploy Infrastructure
 
 ```bash
-python3 attack-simulations/scripts/performance_test.py --duration 60 --concurrent 10
+# Initialize Terraform
+terraform init
+
+# Plan deployment
+terraform plan
+
+# Apply configuration
+terraform apply
 ```
 
-### Response Time Tests
-
-Test attack detection response times:
+### 4. Verify Deployment
 
 ```bash
-python3 attack-simulations/scripts/response_time_test.py --test-count 100 --concurrent 10
+# View outputs
+terraform output
+
+# Check resources
+terraform show
 ```
 
-### Throughput Tests
+## 🌍 Environment Configurations
 
-Test system throughput capabilities:
+### Testing Environment
+- **Purpose**: Development and testing
+- **Resources**: Minimal instances, basic monitoring
+- **Cost**: Optimized with spot instances and scheduled shutdowns
+- **Security**: Standard security measures
 
+### Staging Environment
+- **Purpose**: Pre-production testing
+- **Resources**: Production-like setup with enhanced monitoring
+- **Cost**: Balanced with some optimization
+- **Security**: High security measures
+
+### Production Environment
+- **Purpose**: Live production system
+- **Resources**: Full-scale deployment with comprehensive monitoring
+- **Cost**: Performance over cost optimization
+- **Security**: Maximum security measures
+
+## 🖥️ Operating System Support
+
+### Linux (Amazon Linux 2)
+- **Use Case**: Primary development and production
+- **Features**: Full Docker support, comprehensive monitoring
+- **Security**: Fail2ban, firewall, security updates
+
+### Windows (Windows Server 2019)
+- **Use Case**: Windows-specific development and testing
+- **Features**: PowerShell automation, Windows services
+- **Security**: Windows Defender, firewall, security updates
+
+### macOS (macOS Server)
+- **Use Case**: macOS development and testing
+- **Features**: Homebrew package management, native tools
+- **Security**: Built-in security features, firewall
+
+## ☁️ Cloud Provider Support
+
+### AWS (Recommended)
+- **Services**: EC2, RDS, VPC, CloudWatch, S3, KMS
+- **Features**: Full feature set, comprehensive monitoring
+- **Cost**: Pay-as-you-go with optimization
+
+### Azure
+- **Services**: Virtual Machines, SQL Database, VNet, Monitor
+- **Features**: Enterprise integration, hybrid cloud
+- **Cost**: Enterprise pricing with reserved instances
+
+### Google Cloud Platform
+- **Services**: Compute Engine, Cloud SQL, VPC, Monitoring
+- **Features**: Kubernetes integration, machine learning
+- **Cost**: Sustained use discounts, preemptible instances
+
+### Local Development
+- **Services**: Docker containers, local databases
+- **Features**: Development environment, testing
+- **Cost**: Free local development
+
+## 🔒 Security Features
+
+### Encryption
+- **At Rest**: KMS encryption for all storage
+- **In Transit**: TLS/SSL for all communications
+- **Key Management**: Automated key rotation
+
+### Monitoring and Compliance
+- **CloudTrail**: Complete audit logging
+- **Config**: Resource compliance monitoring
+- **GuardDuty**: Threat detection
+- **Security Hub**: Centralized security management
+
+### Network Security
+- **VPC**: Isolated network environment
+- **Security Groups**: Granular access control
+- **WAF**: Web application firewall
+- **Flow Logs**: Network traffic monitoring
+
+## 💰 Cost Optimization
+
+### Spot Instances
+- **Savings**: Up to 90% cost reduction
+- **Use Case**: Non-critical workloads
+- **Availability**: Testing and development environments
+
+### Auto Scaling
+- **Dynamic**: Scale based on demand
+- **Efficient**: Right-size resources
+- **Cost-Effective**: Pay only for what you use
+
+### Scheduled Shutdown
+- **Non-Production**: Automatic shutdown during off-hours
+- **Savings**: Significant cost reduction for dev/test
+- **Automation**: Scheduled start/stop
+
+### Reserved Instances
+- **Production**: Long-term cost savings
+- **Commitment**: 1-3 year terms
+- **Savings**: Up to 75% cost reduction
+
+## 📊 Monitoring and Logging
+
+### CloudWatch Integration
+- **Metrics**: Custom and AWS metrics
+- **Logs**: Centralized logging
+- **Alarms**: Automated alerting
+- **Dashboards**: Visual monitoring
+
+### Prometheus (Comprehensive Monitoring)
+- **Metrics**: Application and infrastructure metrics
+- **Grafana**: Advanced visualization
+- **Alerting**: Sophisticated alerting rules
+- **Storage**: Long-term metric storage
+
+### Log Aggregation
+- **Centralized**: All logs in one place
+- **Searchable**: Full-text search capabilities
+- **Retention**: Configurable retention policies
+- **Analysis**: Log analysis and insights
+
+## 🔄 Backup and Disaster Recovery
+
+### Automated Backups
+- **Frequency**: Daily, weekly, monthly schedules
+- **Retention**: Configurable retention periods
+- **Encryption**: All backups encrypted
+- **Testing**: Regular restore testing
+
+### Multi-Region Support
+- **Replication**: Cross-region backup replication
+- **Recovery**: Fast disaster recovery
+- **Compliance**: Data residency requirements
+- **Cost**: Optimized storage classes
+
+## 🚀 Deployment Scripts
+
+### Automated Deployment
 ```bash
-python3 attack-simulations/scripts/throughput_test.py --duration 60 --concurrent 20
+# Deploy specific environment
+./deploy.sh testing aws
+
+# Deploy with custom variables
+./deploy.sh staging aws --var="instance_count=5"
+
+# Deploy with monitoring
+./deploy.sh production aws --enable-monitoring
 ```
 
-## Attack Types
-
-### MEV Attacks
-
-1. **Sandwich Attacks**
-   - Front-running victim transactions
-   - Back-running for profit
-   - Price manipulation detection
-
-2. **Front-Running Attacks**
-   - Transaction ordering manipulation
-   - Gas price optimization
-   - Mempool monitoring
-
-3. **Arbitrage Attacks**
-   - Cross-pool price differences
-   - Flash loan arbitrage
-   - Market inefficiency exploitation
-
-### Flash Loan Attacks
-
-1. **Price Manipulation**
-   - Large flash loan amounts
-   - Price impact exploitation
-   - Liquidity pool manipulation
-
-2. **Arbitrage Exploitation**
-   - Cross-exchange arbitrage
-   - Price difference exploitation
-   - Risk-free profit extraction
-
-3. **Liquidity Drain**
-   - Pool liquidity extraction
-   - Token value manipulation
-   - Economic attack simulation
-
-4. **Governance Attacks**
-   - Voting power manipulation
-   - Proposal exploitation
-   - Governance token attacks
-
-### Oracle Manipulation
-
-1. **Price Flash Loan Attacks**
-   - Oracle price manipulation
-   - Flash loan price impact
-   - Consensus mechanism testing
-
-2. **Oracle Delay Exploits**
-   - Stale price exploitation
-   - Time-based attacks
-   - Update frequency manipulation
-
-3. **Cross-Chain Manipulation**
-   - Multi-chain oracle attacks
-   - Bridge price manipulation
-   - Cross-chain consensus testing
-
-4. **Governance Oracle Attacks**
-   - Oracle parameter manipulation
-   - Governance-based attacks
-   - System configuration exploitation
-
-## Metrics and Monitoring
-
-### Key Metrics
-
-- **Attack Success Rate**: Percentage of successful attacks
-- **Detection Time**: Time to detect and respond to attacks
-- **System Performance**: CPU, memory, and network usage
-- **Throughput**: Attacks per second capacity
-- **Response Time**: System response times under load
-
-### Alerting
-
-The system includes comprehensive alerting for:
-
-- High attack success rates
-- System resource exhaustion
-- Service availability issues
-- Security event detection
-- Performance degradation
-
-## Security Features
-
-### Attack Detection
-
-- Real-time attack pattern recognition
-- Machine learning-based detection
-- Statistical anomaly detection
-- Behavioral analysis
-
-### Protection Mechanisms
-
-- Rate limiting and throttling
-- Economic attack prevention
-- Oracle consensus validation
-- MEV protection algorithms
-
-### Monitoring and Alerting
-
-- 24/7 security monitoring
-- Automated incident response
-- Real-time alerting
-- Comprehensive logging
-
-## Usage Examples
-
-### Running MEV Attack Simulation
-
+### Environment Management
 ```bash
-# Start MEV simulation
-python3 attack-simulations/mev-attacks/mev_simulator.py \
-    --config attack-simulations/mev-attacks/config.json \
-    --monitoring
+# List environments
+terraform workspace list
 
-# Run specific MEV attack
-python3 attack-simulations/mev-attacks/simulate_sandwich_attack.py \
-    --config attack-simulations/mev-attacks/config.json \
-    --duration 30
+# Switch environment
+terraform workspace select testing
+
+# Create new environment
+terraform workspace new development
 ```
 
-### Running Flash Loan Attack Simulation
+## 🔧 Configuration Management
 
+### Environment Variables
 ```bash
-# Start flash loan simulation
-python3 attack-simulations/flash-loan-attacks/flash_loan_simulator.py \
-    --config attack-simulations/flash-loan-attacks/config.json \
-    --monitoring
+# Set environment
+export TF_VAR_environment=testing
+export TF_VAR_cloud_provider=aws
+export TF_VAR_region=us-west-2
 
-# Run specific flash loan attack
-python3 attack-simulations/flash-loan-attacks/simulate_price_manipulation_attack.py \
-    --config attack-simulations/flash-loan-attacks/config.json
+# Deploy
+terraform apply
 ```
 
-### Running Oracle Attack Simulation
-
+### Variable Files
 ```bash
-# Start oracle simulation
-python3 attack-simulations/oracle-manipulation/oracle_simulator.py \
-    --config attack-simulations/oracle-manipulation/config.json \
-    --monitoring
+# Use specific variable file
+terraform apply -var-file="testing.tfvars"
 
-# Run specific oracle attack
-python3 attack-simulations/oracle-manipulation/simulate_price_flash_loan_attack.py \
-    --config attack-simulations/oracle-manipulation/config.json
+# Use multiple variable files
+terraform apply -var-file="common.tfvars" -var-file="testing.tfvars"
 ```
 
-## Development
+## 📈 Scaling and Performance
 
-### Adding New Attack Types
+### Horizontal Scaling
+- **Auto Scaling Groups**: Automatic instance scaling
+- **Load Balancers**: Traffic distribution
+- **Database Scaling**: Read replicas, sharding
+- **Caching**: Redis, ElastiCache
 
-1. Create new attack simulation script
-2. Add configuration to Terraform
-3. Update monitoring dashboards
-4. Add security tests
-5. Update documentation
+### Vertical Scaling
+- **Instance Types**: Upgrade instance sizes
+- **Storage**: Increase storage capacity
+- **Memory**: Add more RAM
+- **CPU**: More processing power
 
-### Customizing Tests
+## 🛠️ Development Workflow
 
-Modify test parameters in the configuration files:
+### Local Development
+```bash
+# Start local environment
+docker-compose up -d
 
-```json
-{
-  "simulation_config": {
-    "bot_count": 10,
-    "attack_frequency": "high",
-    "target_pools": ["USDC/USDT", "SOL/USDC"],
-    "simulation_duration": "24h"
-  }
-}
+# Run tests
+terraform plan -var="environment=testing"
+
+# Deploy changes
+terraform apply -var="environment=testing"
 ```
 
-## Troubleshooting
+### CI/CD Integration
+```yaml
+# GitHub Actions example
+name: Deploy Infrastructure
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init
+      - run: terraform plan
+      - run: terraform apply -auto-approve
+```
+
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-1. **Docker containers not starting**
-   - Check Docker daemon status
-   - Verify port availability
-   - Check resource constraints
+#### Terraform State Issues
+```bash
+# Refresh state
+terraform refresh
 
-2. **Attack simulations failing**
-   - Check Python dependencies
-   - Verify configuration files
-   - Check system resources
+# Import existing resources
+terraform import aws_instance.example i-1234567890abcdef0
 
-3. **Monitoring not working**
-   - Verify service connectivity
-   - Check configuration files
-   - Restart monitoring services
+# State management
+terraform state list
+terraform state show aws_instance.example
+```
 
-### Logs
+#### Provider Issues
+```bash
+# Update providers
+terraform init -upgrade
 
-Check logs in the following locations:
+# Clean provider cache
+rm -rf .terraform/
+terraform init
+```
 
-- **Attack Simulations**: `attack-simulations/logs/`
-- **Docker Containers**: `docker logs <container_name>`
-- **System Logs**: `/var/log/`
+#### Resource Conflicts
+```bash
+# Check for conflicts
+terraform plan -detailed-exitcode
 
-## Maintenance
+# Resolve conflicts
+terraform apply -replace=aws_instance.example
+```
 
-### Regular Tasks
+### Debugging
+```bash
+# Enable debug logging
+export TF_LOG=DEBUG
+terraform apply
 
-1. **Update Dependencies**
-   ```bash
-   pip install -r requirements.txt --upgrade
-   ```
+# Verbose output
+terraform apply -verbose
 
-2. **Clean Logs**
-   ```bash
-   find attack-simulations/logs/ -name "*.log" -mtime +7 -delete
-   ```
+# Plan with details
+terraform plan -out=plan.out
+terraform show plan.out
+```
 
-3. **Restart Services**
-   ```bash
-   docker-compose restart
-   ```
+## 📚 Documentation
 
-### Backup
+### Module Documentation
+- [VPC Module](modules/vpc/README.md)
+- [Security Groups](modules/security-groups/README.md)
+- [EC2 Instances](modules/ec2-instances/README.md)
+- [RDS Database](modules/rds/README.md)
+- [Load Balancer](modules/load-balancer/README.md)
+- [Monitoring](modules/monitoring/README.md)
+- [Backup](modules/backup/README.md)
+- [Security](modules/security/README.md)
+- [Cost Optimization](modules/cost-optimization/README.md)
 
-Regularly backup:
-- Configuration files
-- Test results
-- Monitoring data
-- Log files
+### Best Practices
+- [Security Best Practices](docs/security.md)
+- [Cost Optimization](docs/cost-optimization.md)
+- [Monitoring Setup](docs/monitoring.md)
+- [Backup Strategy](docs/backup.md)
 
-## Documentation
+## 🤝 Contributing
 
-- [Secure DEX Development Plan](../Secure_DEX_Development_Plan.md)
-- [Attack Simulation API Documentation](docs/api.md)
-- [Monitoring Setup Guide](docs/monitoring.md)
-- [Security Testing Guide](docs/security-testing.md)
+### Development Setup
+```bash
+# Fork the repository
+git clone <your-fork>
+cd VaultSwap/terraform
 
-## Contributing
+# Create feature branch
+git checkout -b feature/new-feature
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+# Make changes
+# Test changes
+terraform plan
 
-## License
+# Commit changes
+git commit -m "Add new feature"
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+# Push changes
+git push origin feature/new-feature
+```
 
-## Support
+### Code Standards
+- **Terraform**: Follow HashiCorp best practices
+- **Documentation**: Update README files
+- **Testing**: Test all changes
+- **Security**: Security-first approach
 
-For support and questions:
+## 📞 Support
 
-- Create an issue in the repository
-- Check the troubleshooting section
-- Review the documentation
-- Contact the development team
+### Getting Help
+- **Documentation**: Check this README and module docs
+- **Issues**: Create GitHub issues for bugs
+- **Discussions**: Use GitHub discussions for questions
+- **Community**: Join our community forum
+
+### Contact Information
+- **Email**: devops@vaultswap.com
+- **Slack**: #infrastructure
+- **GitHub**: Create issues and discussions
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- HashiCorp for Terraform
+- AWS, Azure, GCP for cloud services
+- Open source community for tools and libraries
+- VaultSwap team for development and testing
 
 ---
 
-**Note**: This attack simulation environment is designed for testing and validation purposes only. Do not use in production environments without proper security measures and monitoring.
+**Happy Infrastructure Building! 🚀**

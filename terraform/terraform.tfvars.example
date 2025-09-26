@@ -1,0 +1,62 @@
+# Terraform Variables Example for VaultSwap DEX Infrastructure
+# Copy this file to terraform.tfvars and customize for your environment
+
+# Environment Configuration
+environment = "testing"  # Options: testing, staging, production
+cloud_provider = "aws"  # Options: aws, azure, gcp, local
+region = "us-west-2"
+
+# Operating Systems
+operating_systems = ["linux", "windows", "macos"]
+
+# Instance Configuration
+instance_count = 2
+instance_type = "t3.medium"
+storage_size = 50
+
+# Security Configuration
+security_level = "standard"  # Options: standard, high, maximum
+monitoring_level = "basic"    # Options: basic, enhanced, comprehensive
+
+# Cost Optimization
+cost_optimization = true
+enable_spot_instances = true
+enable_auto_scaling = true
+enable_scheduled_shutdown = true
+
+# Backup Configuration
+backup_retention_days = 30
+
+# Network Configuration
+vpc_cidr = "10.0.0.0/16"
+public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+
+# Database Configuration
+db_instance_class = "db.t3.micro"
+db_allocated_storage = 20
+db_backup_retention_period = 7
+
+# Load Balancer Configuration
+enable_ssl = true
+ssl_certificate_arn = ""  # Leave empty for auto-generated
+
+# Monitoring Configuration
+enable_cloudwatch = true
+enable_prometheus = false  # Only for comprehensive monitoring
+enable_grafana = false     # Only for comprehensive monitoring
+
+# Alerting Configuration
+alert_email_addresses = ["admin@vaultswap.com"]
+budget_email_addresses = ["finance@vaultswap.com"]
+
+# Tags
+common_tags = {
+  Project     = "VaultSwap-DEX"
+  Environment = "testing"
+  Owner       = "DevOps Team"
+  CostCenter  = "Engineering"
+  Backup      = "Required"
+  Monitoring  = "Enabled"
+  Security    = "Standard"
+}

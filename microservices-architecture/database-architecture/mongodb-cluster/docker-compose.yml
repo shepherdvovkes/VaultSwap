@@ -1,0 +1,311 @@
+version: '3.8'
+
+services:
+  # MongoDB Replica Set - Primary
+  mongodb-primary:
+    image: mongo:7.0
+    container_name: mongodb-primary
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-primary-data:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet ultrana-rs
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Replica Set - Secondary 1
+  mongodb-secondary-1:
+    image: mongo:7.0
+    container_name: mongodb-secondary-1
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-secondary-1-data:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet ultrana-rs
+    depends_on:
+      - mongodb-primary
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Replica Set - Secondary 2
+  mongodb-secondary-2:
+    image: mongo:7.0
+    container_name: mongodb-secondary-2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongodb-secondary-2-data:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet ultrana-rs
+    depends_on:
+      - mongodb-primary
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Replica Set - Arbiter
+  mongodb-arbiter:
+    image: mongo:7.0
+    container_name: mongodb-arbiter
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongodb-arbiter-data:/data/db
+      - ./mongod.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet ultrana-rs
+    depends_on:
+      - mongodb-primary
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Replica Set Initialization
+  mongodb-init:
+    image: mongo:7.0
+    container_name: mongodb-init
+    depends_on:
+      - mongodb-primary
+      - mongodb-secondary-1
+      - mongodb-secondary-2
+      - mongodb-arbiter
+    command: >
+      bash -c "
+        sleep 10 &&
+        mongosh --host mongodb-primary:27017 --username ultrana --password ultrana_password --authenticationDatabase admin --eval '
+          rs.initiate({
+            _id: \"ultrana-rs\",
+            members: [
+              { _id: 0, host: \"mongodb-primary:27017\", priority: 2 },
+              { _id: 1, host: \"mongodb-secondary-1:27017\", priority: 1 },
+              { _id: 2, host: \"mongodb-secondary-2:27017\", priority: 1 },
+              { _id: 3, host: \"mongodb-arbiter:27017\", arbiterOnly: true }
+            ]
+          })
+        '
+      "
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Shard 1 - Primary
+  mongodb-shard1-primary:
+    image: mongo:7.0
+    container_name: mongodb-shard1-primary
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27021:27017"
+    volumes:
+      - mongodb-shard1-primary-data:/data/db
+      - ./mongod-shard.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet shard1-rs
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Shard 1 - Secondary
+  mongodb-shard1-secondary:
+    image: mongo:7.0
+    container_name: mongodb-shard1-secondary
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27022:27017"
+    volumes:
+      - mongodb-shard1-secondary-data:/data/db
+      - ./mongod-shard.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet shard1-rs
+    depends_on:
+      - mongodb-shard1-primary
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Shard 2 - Primary
+  mongodb-shard2-primary:
+    image: mongo:7.0
+    container_name: mongodb-shard2-primary
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27023:27017"
+    volumes:
+      - mongodb-shard2-primary-data:/data/db
+      - ./mongod-shard.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet shard2-rs
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Shard 2 - Secondary
+  mongodb-shard2-secondary:
+    image: mongo:7.0
+    container_name: mongodb-shard2-secondary
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27024:27017"
+    volumes:
+      - mongodb-shard2-secondary-data:/data/db
+      - ./mongod-shard.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet shard2-rs
+    depends_on:
+      - mongodb-shard2-primary
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Config Server 1
+  mongodb-config-1:
+    image: mongo:7.0
+    container_name: mongodb-config-1
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27025:27017"
+    volumes:
+      - mongodb-config-1-data:/data/db
+      - ./mongod-config.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet config-rs
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Config Server 2
+  mongodb-config-2:
+    image: mongo:7.0
+    container_name: mongodb-config-2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27026:27017"
+    volumes:
+      - mongodb-config-2-data:/data/db
+      - ./mongod-config.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet config-rs
+    depends_on:
+      - mongodb-config-1
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Config Server 3
+  mongodb-config-3:
+    image: mongo:7.0
+    container_name: mongodb-config-3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27027:27017"
+    volumes:
+      - mongodb-config-3-data:/data/db
+      - ./mongod-config.conf:/etc/mongod.conf
+    command: mongod --config /etc/mongod.conf --replSet config-rs
+    depends_on:
+      - mongodb-config-1
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Mongos (Router)
+  mongodb-mongos:
+    image: mongo:7.0
+    container_name: mongodb-mongos
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+    ports:
+      - "27028:27017"
+    volumes:
+      - ./mongos.conf:/etc/mongos.conf
+    command: mongos --config /etc/mongos.conf
+    depends_on:
+      - mongodb-config-1
+      - mongodb-config-2
+      - mongodb-config-3
+      - mongodb-shard1-primary
+      - mongodb-shard2-primary
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Admin (MongoDB Compass)
+  mongodb-compass:
+    image: mongo-express:latest
+    container_name: mongodb-compass
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ultrana
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ultrana_password
+      ME_CONFIG_MONGODB_URL: mongodb://ultrana:ultrana_password@mongodb-mongos:27017/
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb-mongos
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Backup Service
+  mongodb-backup:
+    image: mongo:7.0
+    container_name: mongodb-backup
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ultrana
+      MONGO_INITDB_ROOT_PASSWORD: ultrana_password
+      BACKUP_SCHEDULE: "0 3 * * *"  # Daily at 3 AM
+    volumes:
+      - ./backup-scripts:/backup-scripts
+      - mongodb-backup-data:/backup
+    command: >
+      sh -c "
+        while true; do
+          echo 'Starting MongoDB backup at $(date)'
+          /backup-scripts/mongodb-backup.sh
+          echo 'MongoDB backup completed at $(date)'
+          sleep 86400  # 24 hours
+        done
+      "
+    depends_on:
+      - mongodb-mongos
+    networks:
+      - mongodb-cluster
+
+  # MongoDB Monitoring (MongoDB Exporter)
+  mongodb-exporter:
+    image: percona/mongodb_exporter:latest
+    container_name: mongodb-exporter
+    environment:
+      MONGODB_URI: mongodb://ultrana:ultrana_password@mongodb-mongos:27017/
+    ports:
+      - "9216:9216"
+    depends_on:
+      - mongodb-mongos
+    networks:
+      - mongodb-cluster
+
+volumes:
+  mongodb-primary-data:
+  mongodb-secondary-1-data:
+  mongodb-secondary-2-data:
+  mongodb-arbiter-data:
+  mongodb-shard1-primary-data:
+  mongodb-shard1-secondary-data:
+  mongodb-shard2-primary-data:
+  mongodb-shard2-secondary-data:
+  mongodb-config-1-data:
+  mongodb-config-2-data:
+  mongodb-config-3-data:
+  mongodb-backup-data:
+
+networks:
+  mongodb-cluster:
+    driver: bridge

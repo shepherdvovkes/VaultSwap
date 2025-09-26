@@ -1,6 +1,6 @@
 #!/bin/bash
-# Attack Simulation Environment Deployment Script
-# This script automates the deployment of the DEX attack simulation environment
+# VaultSwap DEX Infrastructure Deployment Script
+# Supports testing, staging, and production environments
 
 set -euo pipefail
 
@@ -11,12 +11,63 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
-ENVIRONMENT_NAME="dex-attack-sim"
-LOG_DIR="/var/log/attack-simulations"
-SIMULATION_DIR="/opt/attack-simulations"
+# Default values
+ENVIRONMENT="testing"
+CLOUD_PROVIDER="aws"
+REGION="us-west-2"
+AUTO_APPROVE=false
+DESTROY=false
+PLAN_ONLY=false
+ENABLE_MONITORING=false
+ENABLE_COST_OPTIMIZATION=true
 
-# Logging function
+# Help function
+show_help() {
+    cat << EOF
+VaultSwap DEX Infrastructure Deployment Script
+
+USAGE:
+    $0 [OPTIONS] ENVIRONMENT CLOUD_PROVIDER
+
+ARGUMENTS:
+    ENVIRONMENT      Environment to deploy (testing, staging, production)
+    CLOUD_PROVIDER   Cloud provider to use (aws, azure, gcp, local)
+
+OPTIONS:
+    -h, --help              Show this help message
+    -r, --region REGION     AWS region (default: us-west-2)
+    -a, --auto-approve      Auto-approve terraform apply
+    -d, --destroy           Destroy infrastructure instead of creating
+    -p, --plan-only         Only run terraform plan
+    -m, --enable-monitoring Enable comprehensive monitoring
+    -c, --disable-cost-opt  Disable cost optimization
+    -v, --verbose           Enable verbose output
+    --var KEY=VALUE         Set terraform variable
+    --var-file FILE         Use terraform variable file
+
+EXAMPLES:
+    $0 testing aws
+    $0 staging aws --region us-east-1
+    $0 production aws --enable-monitoring
+    $0 testing aws --destroy
+    $0 staging aws --plan-only
+    $0 testing aws --var="instance_count=5"
+
+ENVIRONMENTS:
+    testing     Development and testing environment
+    staging     Pre-production testing environment
+    production  Live production environment
+
+CLOUD PROVIDERS:
+    aws         Amazon Web Services (recommended)
+    azure       Microsoft Azure
+    gcp         Google Cloud Platform
+    local       Local development with Docker
+
+EOF
+}
+
+# Logging functions
 log() {
     echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
@@ -33,369 +84,358 @@ info() {
     echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')] INFO: $1${NC}"
 }
 
-# Check prerequisites
-check_prerequisites() {
-    log "Checking prerequisites..."
-    
-    # Check if running as root or with sudo
-    if [[ $EUID -eq 0 ]]; then
-        warning "Running as root. Consider using a non-root user with sudo privileges."
-    fi
-    
-    # Check Docker
-    if ! command -v docker &> /dev/null; then
-        error "Docker is not installed. Please install Docker first."
-        exit 1
-    fi
-    
-    # Check Docker Compose
-    if ! command -v docker-compose &> /dev/null; then
-        error "Docker Compose is not installed. Please install Docker Compose first."
-        exit 1
-    fi
-    
-    # Check Python
-    if ! command -v python3 &> /dev/null; then
-        error "Python 3 is not installed. Please install Python 3 first."
-        exit 1
-    fi
-    
-    # Check Terraform
-    if ! command -v terraform &> /dev/null; then
-        error "Terraform is not installed. Please install Terraform first."
-        exit 1
-    fi
-    
-    # Check if Docker daemon is running
-    if ! docker info &> /dev/null; then
-        error "Docker daemon is not running. Please start Docker first."
-        exit 1
-    fi
-    
-    log "All prerequisites satisfied"
-}
-
-# Create directories
-create_directories() {
-    log "Creating directories..."
-    
-    sudo mkdir -p "$LOG_DIR"
-    sudo mkdir -p "$SIMULATION_DIR"
-    sudo mkdir -p "attack-simulations/logs"
-    sudo mkdir -p "attack-simulations/monitoring"
-    
-    # Set permissions
-    sudo chown -R $USER:$USER "$LOG_DIR"
-    sudo chown -R $USER:$USER "$SIMULATION_DIR"
-    sudo chown -R $USER:$USER "attack-simulations"
-    
-    log "Directories created successfully"
-}
-
-# Install Python dependencies
-install_python_dependencies() {
-    log "Installing Python dependencies..."
-    
-    # Create virtual environment
-    python3 -m venv venv
-    source venv/bin/activate
-    
-    # Install common dependencies
-    pip install --upgrade pip
-    pip install -r attack-simulations/mev-attacks/requirements.txt
-    pip install -r attack-simulations/flash-loan-attacks/requirements.txt
-    pip install -r attack-simulations/oracle-manipulation/requirements.txt
-    
-    log "Python dependencies installed successfully"
-}
-
-# Deploy Terraform infrastructure
-deploy_terraform() {
-    log "Deploying Terraform infrastructure..."
-    
-    # Initialize Terraform
-    terraform init
-    
-    # Plan deployment
-    terraform plan -var="simulation_environment=$ENVIRONMENT_NAME"
-    
-    # Apply configuration
-    terraform apply -auto-approve -var="simulation_environment=$ENVIRONMENT_NAME"
-    
-    log "Terraform infrastructure deployed successfully"
-}
-
-# Build Docker images
-build_docker_images() {
-    log "Building Docker images..."
-    
-    # Build MEV attack simulator
-    docker build -t mev-attack-simulator attack-simulations/mev-attacks/
-    
-    # Build flash loan attack simulator
-    docker build -t flash-loan-attack-simulator attack-simulations/flash-loan-attacks/
-    
-    # Build oracle attack simulator
-    docker build -t oracle-attack-simulator attack-simulations/oracle-manipulation/
-    
-    log "Docker images built successfully"
-}
-
-# Start monitoring services
-start_monitoring() {
-    log "Starting monitoring services..."
-    
-    # Start Prometheus
-    docker run -d --name prometheus \
-        -p 9090:9090 \
-        -v $(pwd)/attack-simulations/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml \
-        -v $(pwd)/attack-simulations/monitoring/prometheus-rules.yml:/etc/prometheus/rules.yml \
-        prom/prometheus:latest \
-        --config.file=/etc/prometheus/prometheus.yml \
-        --storage.tsdb.path=/prometheus \
-        --web.console.libraries=/etc/prometheus/console_libraries \
-        --web.console.templates=/etc/prometheus/consoles \
-        --web.enable-lifecycle
-    
-    # Start Grafana
-    docker run -d --name grafana \
-        -p 3000:3000 \
-        -v $(pwd)/attack-simulations/monitoring/grafana-dashboard.json:/var/lib/grafana/dashboards/dashboard.json \
-        -e GF_SECURITY_ADMIN_PASSWORD=admin \
-        grafana/grafana:latest
-    
-    # Start Elasticsearch
-    docker run -d --name elasticsearch \
-        -p 9200:9200 \
-        -e discovery.type=single-node \
-        -e xpack.security.enabled=false \
-        -v $(pwd)/attack-simulations/monitoring/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
-        docker.elastic.co/elasticsearch/elasticsearch:8.8.0
-    
-    # Start Kibana
-    docker run -d --name kibana \
-        -p 5601:5601 \
-        -e ELASTICSEARCH_HOSTS=http://elasticsearch:9200 \
-        -v $(pwd)/attack-simulations/monitoring/kibana.yml:/usr/share/kibana/config/kibana.yml \
-        docker.elastic.co/kibana/kibana:8.8.0
-    
-    # Start AlertManager
-    docker run -d --name alertmanager \
-        -p 9093:9093 \
-        -v $(pwd)/attack-simulations/monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml \
-        prom/alertmanager:latest \
-        --config.file=/etc/alertmanager/alertmanager.yml \
-        --storage.path=/alertmanager
-    
-    log "Monitoring services started successfully"
-}
-
-# Start attack simulation services
-start_simulation_services() {
-    log "Starting attack simulation services..."
-    
-    # Start MEV attack simulator
-    docker run -d --name mev-simulator \
-        --network host \
-        -v $(pwd)/attack-simulations/mev-attacks:/app \
-        -v $(pwd)/attack-simulations/logs:/app/logs \
-        mev-attack-simulator
-    
-    # Start flash loan attack simulator
-    docker run -d --name flash-loan-simulator \
-        --network host \
-        -v $(pwd)/attack-simulations/flash-loan-attacks:/app \
-        -v $(pwd)/attack-simulations/logs:/app/logs \
-        flash-loan-attack-simulator
-    
-    # Start oracle attack simulator
-    docker run -d --name oracle-simulator \
-        --network host \
-        -v $(pwd)/attack-simulations/oracle-manipulation:/app \
-        -v $(pwd)/attack-simulations/logs:/app/logs \
-        oracle-attack-simulator
-    
-    log "Attack simulation services started successfully"
-}
-
-# Run health checks
-run_health_checks() {
-    log "Running health checks..."
-    
-    # Check Prometheus
-    if curl -f http://localhost:9090/api/v1/query?query=up &> /dev/null; then
-        log "Prometheus is healthy"
-    else
-        error "Prometheus health check failed"
-    fi
-    
-    # Check Grafana
-    if curl -f http://localhost:3000/api/health &> /dev/null; then
-        log "Grafana is healthy"
-    else
-        error "Grafana health check failed"
-    fi
-    
-    # Check Elasticsearch
-    if curl -f http://localhost:9200/_cluster/health &> /dev/null; then
-        log "Elasticsearch is healthy"
-    else
-        error "Elasticsearch health check failed"
-    fi
-    
-    # Check Kibana
-    if curl -f http://localhost:5601/api/status &> /dev/null; then
-        log "Kibana is healthy"
-    else
-        error "Kibana health check failed"
-    fi
-    
-    # Check attack simulators
-    if docker ps | grep -q mev-simulator; then
-        log "MEV simulator is running"
-    else
-        error "MEV simulator is not running"
-    fi
-    
-    if docker ps | grep -q flash-loan-simulator; then
-        log "Flash loan simulator is running"
-    else
-        error "Flash loan simulator is not running"
-    fi
-    
-    if docker ps | grep -q oracle-simulator; then
-        log "Oracle simulator is running"
-    else
-        error "Oracle simulator is not running"
-    fi
-    
-    log "Health checks completed"
-}
-
-# Run initial tests
-run_initial_tests() {
-    log "Running initial security tests..."
-    
-    # Activate virtual environment
-    source venv/bin/activate
-    
-    # Run security tests
-    python3 attack-simulations/scripts/security_test_runner.py \
-        --config attack-simulations/mev-attacks/config.json \
-        --test-types mev_protection system_health
-    
-    log "Initial tests completed"
-}
-
-# Display access information
-display_access_info() {
-    log "Deployment completed successfully!"
-    
-    echo -e "\n${BLUE}=== Access Information ===${NC}"
-    echo -e "Prometheus: ${GREEN}http://localhost:9090${NC}"
-    echo -e "Grafana: ${GREEN}http://localhost:3000${NC} (admin/admin)"
-    echo -e "Elasticsearch: ${GREEN}http://localhost:9200${NC}"
-    echo -e "Kibana: ${GREEN}http://localhost:5601${NC}"
-    echo -e "AlertManager: ${GREEN}http://localhost:9093${NC}"
-    
-    echo -e "\n${BLUE}=== Attack Simulation Scripts ===${NC}"
-    echo -e "Run attack simulation: ${GREEN}./attack-simulations/scripts/run_attack_simulation.sh${NC}"
-    echo -e "Security tests: ${GREEN}python3 attack-simulations/scripts/security_test_runner.py --config config.json${NC}"
-    echo -e "Performance tests: ${GREEN}python3 attack-simulations/scripts/performance_test.py --duration 60${NC}"
-    echo -e "Response time tests: ${GREEN}python3 attack-simulations/scripts/response_time_test.py --test-count 100${NC}"
-    echo -e "Throughput tests: ${GREEN}python3 attack-simulations/scripts/throughput_test.py --duration 60 --concurrent 10${NC}"
-    
-    echo -e "\n${BLUE}=== Logs ===${NC}"
-    echo -e "Attack simulation logs: ${GREEN}$LOG_DIR${NC}"
-    echo -e "Docker logs: ${GREEN}docker logs <container_name>${NC}"
-    
-    echo -e "\n${BLUE}=== Management Commands ===${NC}"
-    echo -e "Stop all services: ${GREEN}docker stop \$(docker ps -q)${NC}"
-    echo -e "Start all services: ${GREEN}docker start \$(docker ps -aq)${NC}"
-    echo -e "View running containers: ${GREEN}docker ps${NC}"
-    echo -e "View logs: ${GREEN}docker logs <container_name>${NC}"
-}
-
-# Cleanup function
-cleanup() {
-    log "Cleaning up on exit..."
-    
-    # Stop all containers
-    docker stop $(docker ps -q) 2>/dev/null || true
-    
-    # Remove containers
-    docker rm $(docker ps -aq) 2>/dev/null || true
-    
-    log "Cleanup completed"
-}
-
-# Main deployment function
-main() {
-    log "Starting DEX Attack Simulation Environment deployment..."
-    
-    # Set up signal handlers
-    trap cleanup EXIT INT TERM
-    
-    # Run deployment steps
-    check_prerequisites
-    create_directories
-    install_python_dependencies
-    deploy_terraform
-    build_docker_images
-    start_monitoring
-    start_simulation_services
-    
-    # Wait for services to start
-    log "Waiting for services to start..."
-    sleep 30
-    
-    # Run health checks
-    run_health_checks
-    
-    # Run initial tests
-    run_initial_tests
-    
-    # Display access information
-    display_access_info
-    
-    log "Deployment completed successfully!"
-}
-
 # Parse command line arguments
+TERRAFORM_VARS=()
+TERRAFORM_VAR_FILES=()
+
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --help|-h)
-            echo "Usage: $0 [OPTIONS]"
-            echo "Options:"
-            echo "  --help, -h          Show this help message"
-            echo "  --skip-tests         Skip running initial tests"
-            echo "  --skip-health-checks Skip running health checks"
-            echo "  --monitoring-only    Only start monitoring services"
-            echo "  --simulation-only    Only start simulation services"
+        -h|--help)
+            show_help
             exit 0
             ;;
-        --skip-tests)
-            SKIP_TESTS=true
+        -r|--region)
+            REGION="$2"
+            shift 2
+            ;;
+        -a|--auto-approve)
+            AUTO_APPROVE=true
             shift
             ;;
-        --skip-health-checks)
-            SKIP_HEALTH_CHECKS=true
+        -d|--destroy)
+            DESTROY=true
             shift
             ;;
-        --monitoring-only)
-            MONITORING_ONLY=true
+        -p|--plan-only)
+            PLAN_ONLY=true
             shift
             ;;
-        --simulation-only)
-            SIMULATION_ONLY=true
+        -m|--enable-monitoring)
+            ENABLE_MONITORING=true
+            shift
+            ;;
+        -c|--disable-cost-opt)
+            ENABLE_COST_OPTIMIZATION=false
+            shift
+            ;;
+        -v|--verbose)
+            set -x
+            shift
+            ;;
+        --var)
+            TERRAFORM_VARS+=("-var=$2")
+            shift 2
+            ;;
+        --var-file)
+            TERRAFORM_VAR_FILES+=("-var-file=$2")
+            shift 2
+            ;;
+        testing|staging|production)
+            ENVIRONMENT="$1"
+            shift
+            ;;
+        aws|azure|gcp|local)
+            CLOUD_PROVIDER="$1"
             shift
             ;;
         *)
             error "Unknown option: $1"
+            show_help
             exit 1
             ;;
     esac
 done
 
-# Run main deployment
-main
+# Validate arguments
+if [[ -z "${ENVIRONMENT:-}" ]]; then
+    error "Environment is required"
+    show_help
+    exit 1
+fi
+
+if [[ -z "${CLOUD_PROVIDER:-}" ]]; then
+    error "Cloud provider is required"
+    show_help
+    exit 1
+fi
+
+# Validate environment
+case $ENVIRONMENT in
+    testing|staging|production)
+        ;;
+    *)
+        error "Invalid environment: $ENVIRONMENT"
+        error "Valid environments: testing, staging, production"
+        exit 1
+        ;;
+esac
+
+# Validate cloud provider
+case $CLOUD_PROVIDER in
+    aws|azure|gcp|local)
+        ;;
+    *)
+        error "Invalid cloud provider: $CLOUD_PROVIDER"
+        error "Valid cloud providers: aws, azure, gcp, local"
+        exit 1
+        ;;
+esac
+
+# Check prerequisites
+check_prerequisites() {
+    log "Checking prerequisites..."
+    
+    # Check if terraform is installed
+    if ! command -v terraform &> /dev/null; then
+        error "Terraform is not installed"
+        error "Please install Terraform >= 1.0"
+        exit 1
+    fi
+    
+    # Check terraform version
+    TERRAFORM_VERSION=$(terraform version -json | jq -r '.terraform_version')
+    REQUIRED_VERSION="1.0.0"
+    
+    if ! terraform version -json | jq -e ".terraform_version | split(\".\") | map(tonumber) | . >= [1, 0, 0]" > /dev/null; then
+        error "Terraform version $TERRAFORM_VERSION is not supported"
+        error "Please upgrade to Terraform >= 1.0"
+        exit 1
+    fi
+    
+    # Check cloud provider specific prerequisites
+    case $CLOUD_PROVIDER in
+        aws)
+            if ! command -v aws &> /dev/null; then
+                error "AWS CLI is not installed"
+                error "Please install AWS CLI and configure credentials"
+                exit 1
+            fi
+            
+            if ! aws sts get-caller-identity &> /dev/null; then
+                error "AWS credentials not configured"
+                error "Please run 'aws configure' or set AWS environment variables"
+                exit 1
+            fi
+            ;;
+        azure)
+            if ! command -v az &> /dev/null; then
+                error "Azure CLI is not installed"
+                error "Please install Azure CLI and login"
+                exit 1
+            fi
+            ;;
+        gcp)
+            if ! command -v gcloud &> /dev/null; then
+                error "Google Cloud CLI is not installed"
+                error "Please install Google Cloud CLI and authenticate"
+                exit 1
+            fi
+            ;;
+        local)
+            if ! command -v docker &> /dev/null; then
+                error "Docker is not installed"
+                error "Please install Docker for local development"
+                exit 1
+            fi
+            ;;
+    esac
+    
+    log "Prerequisites check passed"
+}
+
+# Initialize terraform
+init_terraform() {
+    log "Initializing Terraform..."
+    
+    # Clean up previous state if needed
+    if [[ -d ".terraform" ]]; then
+        warning "Cleaning up previous Terraform state..."
+        rm -rf .terraform
+    fi
+    
+    # Initialize terraform
+    terraform init -upgrade
+    
+    if [[ $? -ne 0 ]]; then
+        error "Terraform initialization failed"
+        exit 1
+    fi
+    
+    log "Terraform initialized successfully"
+}
+
+# Create terraform workspace
+create_workspace() {
+    log "Creating Terraform workspace: $ENVIRONMENT-$CLOUD_PROVIDER"
+    
+    WORKSPACE_NAME="$ENVIRONMENT-$CLOUD_PROVIDER"
+    
+    # Check if workspace exists
+    if terraform workspace list | grep -q "$WORKSPACE_NAME"; then
+        log "Workspace $WORKSPACE_NAME already exists"
+    else
+        terraform workspace new "$WORKSPACE_NAME"
+    fi
+    
+    # Select workspace
+    terraform workspace select "$WORKSPACE_NAME"
+    
+    log "Using workspace: $WORKSPACE_NAME"
+}
+
+# Build terraform command
+build_terraform_command() {
+    TERRAFORM_CMD="terraform"
+    
+    if [[ "$DESTROY" == "true" ]]; then
+        TERRAFORM_CMD="$TERRAFORM_CMD destroy"
+    elif [[ "$PLAN_ONLY" == "true" ]]; then
+        TERRAFORM_CMD="$TERRAFORM_CMD plan"
+    else
+        TERRAFORM_CMD="$TERRAFORM_CMD apply"
+    fi
+    
+    # Add auto-approve for apply/destroy
+    if [[ "$AUTO_APPROVE" == "true" && "$PLAN_ONLY" != "true" ]]; then
+        TERRAFORM_CMD="$TERRAFORM_CMD -auto-approve"
+    fi
+    
+    # Add variables
+    TERRAFORM_CMD="$TERRAFORM_CMD -var=\"environment=$ENVIRONMENT\""
+    TERRAFORM_CMD="$TERRAFORM_CMD -var=\"cloud_provider=$CLOUD_PROVIDER\""
+    TERRAFORM_CMD="$TERRAFORM_CMD -var=\"region=$REGION\""
+    
+    # Add monitoring variable
+    if [[ "$ENABLE_MONITORING" == "true" ]]; then
+        TERRAFORM_CMD="$TERRAFORM_CMD -var=\"monitoring_level=comprehensive\""
+    fi
+    
+    # Add cost optimization variable
+    if [[ "$ENABLE_COST_OPTIMIZATION" == "false" ]]; then
+        TERRAFORM_CMD="$TERRAFORM_CMD -var=\"cost_optimization=false\""
+    fi
+    
+    # Add custom variables
+    for var in "${TERRAFORM_VARS[@]}"; do
+        TERRAFORM_CMD="$TERRAFORM_CMD $var"
+    done
+    
+    # Add variable files
+    for var_file in "${TERRAFORM_VAR_FILES[@]}"; do
+        TERRAFORM_CMD="$TERRAFORM_CMD $var_file"
+    done
+    
+    # Add output file for plan
+    if [[ "$PLAN_ONLY" == "true" ]]; then
+        PLAN_FILE="plan-$ENVIRONMENT-$CLOUD_PROVIDER.tfplan"
+        TERRAFORM_CMD="$TERRAFORM_CMD -out=$PLAN_FILE"
+    fi
+}
+
+# Run terraform command
+run_terraform() {
+    log "Running Terraform command: $TERRAFORM_CMD"
+    
+    # Execute terraform command
+    eval $TERRAFORM_CMD
+    
+    if [[ $? -ne 0 ]]; then
+        error "Terraform command failed"
+        exit 1
+    fi
+    
+    log "Terraform command completed successfully"
+}
+
+# Show outputs
+show_outputs() {
+    if [[ "$DESTROY" != "true" && "$PLAN_ONLY" != "true" ]]; then
+        log "Infrastructure deployed successfully!"
+        log "Showing outputs..."
+        
+        echo ""
+        echo "=== INFRASTRUCTURE OUTPUTS ==="
+        terraform output
+        
+        echo ""
+        echo "=== CONNECTION INFORMATION ==="
+        echo "Environment: $ENVIRONMENT"
+        echo "Cloud Provider: $CLOUD_PROVIDER"
+        echo "Region: $REGION"
+        echo ""
+        
+        # Show specific outputs based on cloud provider
+        case $CLOUD_PROVIDER in
+            aws)
+                echo "Load Balancer: $(terraform output -raw load_balancer_dns 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw rds_endpoint 2>/dev/null || echo 'N/A')"
+                echo "Monitoring: $(terraform output -raw monitoring_dashboard 2>/dev/null || echo 'N/A')"
+                ;;
+            azure)
+                echo "Load Balancer: $(terraform output -raw load_balancer_dns 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw database_endpoint 2>/dev/null || echo 'N/A')"
+                ;;
+            gcp)
+                echo "Load Balancer: $(terraform output -raw load_balancer_ip 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw database_endpoint 2>/dev/null || echo 'N/A')"
+                ;;
+            local)
+                echo "Docker Compose: docker-compose up -d"
+                echo "Local URLs: http://localhost:8080"
+                ;;
+        esac
+        
+        echo ""
+        echo "=== NEXT STEPS ==="
+        echo "1. Verify deployment: terraform show"
+        echo "2. View resources: terraform state list"
+        echo "3. Update configuration: terraform apply"
+        echo "4. Destroy resources: terraform destroy"
+        echo ""
+    fi
+}
+
+# Cleanup function
+cleanup() {
+    if [[ "$PLAN_ONLY" == "true" && -f "$PLAN_FILE" ]]; then
+        log "Plan file saved: $PLAN_FILE"
+        log "To apply this plan: terraform apply $PLAN_FILE"
+    fi
+}
+
+# Main execution
+main() {
+    log "Starting VaultSwap DEX Infrastructure Deployment"
+    log "Environment: $ENVIRONMENT"
+    log "Cloud Provider: $CLOUD_PROVIDER"
+    log "Region: $REGION"
+    
+    # Check prerequisites
+    check_prerequisites
+    
+    # Initialize terraform
+    init_terraform
+    
+    # Create workspace
+    create_workspace
+    
+    # Build terraform command
+    build_terraform_command
+    
+    # Run terraform command
+    run_terraform
+    
+    # Show outputs
+    show_outputs
+    
+    # Cleanup
+    cleanup
+    
+    log "Deployment completed successfully!"
+}
+
+# Signal handlers
+trap 'error "Deployment interrupted"; exit 1' INT TERM
+
+# Run main function
+main "$@"
