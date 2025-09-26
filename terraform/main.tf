@@ -45,11 +45,17 @@ variable "attack_scenarios" {
     "mev-attacks",
     "flash-loan-attacks", 
     "oracle-manipulation",
+    "reentrancy-attacks",
+    "economic-attacks",
+    "governance-attacks",
+    "cross-chain-attacks",
+    "staking-attacks",
+    "ddos-attacks",
+    "social-engineering-attacks",
+    "supply-chain-attacks",
     "sandwich-attacks",
     "front-running",
-    "back-running",
-    "economic-attacks",
-    "governance-attacks"
+    "back-running"
   ]
 }
 
