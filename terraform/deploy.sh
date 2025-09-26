@@ -230,11 +230,29 @@ check_prerequisites() {
                 error "Please install Google Cloud CLI and authenticate"
                 exit 1
             fi
+            
+            if ! gcloud auth list --filter=status:ACTIVE --format="value(account)" | grep -q .; then
+                error "GCP authentication required"
+                error "Please run 'gcloud auth login' and 'gcloud auth application-default login'"
+                exit 1
+            fi
+            
+            if [[ -z "${GCP_PROJECT_ID:-}" ]]; then
+                error "GCP_PROJECT_ID environment variable is required for GCP deployment"
+                error "Please set GCP_PROJECT_ID or use --var='gcp_project_id=your-project-id'"
+                exit 1
+            fi
             ;;
         local)
             if ! command -v docker &> /dev/null; then
                 error "Docker is not installed"
                 error "Please install Docker for local development"
+                exit 1
+            fi
+            
+            if ! docker info &> /dev/null; then
+                error "Docker daemon is not running"
+                error "Please start Docker daemon"
                 exit 1
             fi
             ;;
@@ -367,21 +385,27 @@ show_outputs() {
         # Show specific outputs based on cloud provider
         case $CLOUD_PROVIDER in
             aws)
-                echo "Load Balancer: $(terraform output -raw load_balancer_dns 2>/dev/null || echo 'N/A')"
-                echo "Database: $(terraform output -raw rds_endpoint 2>/dev/null || echo 'N/A')"
-                echo "Monitoring: $(terraform output -raw monitoring_dashboard 2>/dev/null || echo 'N/A')"
+                echo "Load Balancer: $(terraform output -raw 'infrastructure_endpoints.aws.load_balancer_dns' 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw 'infrastructure_endpoints.aws.rds_endpoint' 2>/dev/null || echo 'N/A')"
+                echo "Monitoring: $(terraform output -raw 'infrastructure_endpoints.aws.monitoring_dashboard' 2>/dev/null || echo 'N/A')"
                 ;;
             azure)
-                echo "Load Balancer: $(terraform output -raw load_balancer_dns 2>/dev/null || echo 'N/A')"
-                echo "Database: $(terraform output -raw database_endpoint 2>/dev/null || echo 'N/A')"
+                echo "Load Balancer: $(terraform output -raw 'infrastructure_endpoints.azure.load_balancer_dns' 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw 'infrastructure_endpoints.azure.database_endpoint' 2>/dev/null || echo 'N/A')"
                 ;;
             gcp)
-                echo "Load Balancer: $(terraform output -raw load_balancer_ip 2>/dev/null || echo 'N/A')"
-                echo "Database: $(terraform output -raw database_endpoint 2>/dev/null || echo 'N/A')"
+                echo "Load Balancer: $(terraform output -raw 'infrastructure_endpoints.gcp.load_balancer_ip' 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw 'infrastructure_endpoints.gcp.database_connection_name' 2>/dev/null || echo 'N/A')"
+                echo "Instances: $(terraform output -raw 'infrastructure_endpoints.gcp.instance_ips' 2>/dev/null || echo 'N/A')"
                 ;;
             local)
-                echo "Docker Compose: docker-compose up -d"
-                echo "Local URLs: http://localhost:8080"
+                echo "Application: $(terraform output -raw 'infrastructure_endpoints.local.application_url' 2>/dev/null || echo 'N/A')"
+                echo "Database: $(terraform output -raw 'infrastructure_endpoints.local.database_url' 2>/dev/null || echo 'N/A')"
+                echo "Monitoring: $(terraform output -raw 'infrastructure_endpoints.local.prometheus_url' 2>/dev/null || echo 'N/A')"
+                echo "Docker Compose: $(terraform output -raw 'infrastructure_endpoints.local.docker_compose_file' 2>/dev/null || echo 'N/A')"
+                echo ""
+                echo "To start local services:"
+                echo "  docker-compose -f $(terraform output -raw 'infrastructure_endpoints.local.docker_compose_file' 2>/dev/null) up -d"
                 ;;
         esac
         

@@ -566,3 +566,4 @@ output "environment_file" {
   description = "Environment file path"
   value       = local_file.env_file.filename
 }
+

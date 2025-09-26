@@ -1,0 +1,151 @@
+# Ultrana DEX Enhanced Prometheus Configuration
+# This configuration includes DEX-specific metrics and security monitoring
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "ultrana-dex-rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Infrastructure Services
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9092']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Java Microservices - Enhanced DEX Architecture
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+
+  - job_name: 'trading-service'
+    static_configs:
+      - targets: ['trading-service:8081']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 10s  # More frequent for trading metrics
+
+  - job_name: 'liquidity-service'
+    static_configs:
+      - targets: ['liquidity-service:8082']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+
+  - job_name: 'governance-service'
+    static_configs:
+      - targets: ['governance-service:8083']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 30s
+
+  - job_name: 'security-service'
+    static_configs:
+      - targets: ['security-service:8084']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s  # Most frequent for security monitoring
+
+  - job_name: 'cross-chain-service'
+    static_configs:
+      - targets: ['cross-chain-service:8085']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+
+  - job_name: 'wallet-service'
+    static_configs:
+      - targets: ['wallet-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 30s
+
+  - job_name: 'analytics-service'
+    static_configs:
+      - targets: ['analytics-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 15s
+
+  # Haskell Services
+  - job_name: 'haskell-security-service'
+    static_configs:
+      - targets: ['security-service:8081']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'haskell-mev-protection-service'
+    static_configs:
+      - targets: ['mev-protection-service:8082']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  - job_name: 'haskell-economic-analysis-service'
+    static_configs:
+      - targets: ['economic-analysis-service:8083']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Rust Services
+  - job_name: 'rust-solana-gateway-service'
+    static_configs:
+      - targets: ['solana-gateway-service:8084']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'rust-cross-chain-service'
+    static_configs:
+      - targets: ['cross-chain-service:8085']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  - job_name: 'rust-oracle-service'
+    static_configs:
+      - targets: ['oracle-service:8086']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # cAdvisor for container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s

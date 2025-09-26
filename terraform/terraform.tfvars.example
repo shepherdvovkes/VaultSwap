@@ -6,6 +6,9 @@ environment = "testing"  # Options: testing, staging, production
 cloud_provider = "aws"  # Options: aws, azure, gcp, local
 region = "us-west-2"
 
+# GCP Configuration (required for GCP deployment)
+gcp_project_id = ""  # Your GCP Project ID
+
 # Operating Systems
 operating_systems = ["linux", "windows", "macos"]
 

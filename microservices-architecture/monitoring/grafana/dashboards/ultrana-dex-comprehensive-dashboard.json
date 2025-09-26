@@ -1,0 +1,405 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Ultrana DEX - Comprehensive Monitoring Dashboard",
+    "tags": ["ultrana", "dex", "trading", "security"],
+    "style": "dark",
+    "timezone": "browser",
+    "refresh": "5s",
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Trading Volume (24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(trading_volume_24h_usd)",
+            "legendFormat": "Total Volume"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 1000000},
+                {"color": "green", "value": 10000000}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Active Orders",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(orders_active_total)",
+            "legendFormat": "Active Orders"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Total Value Locked (TVL)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(liquidity_pool_tvl_usd)",
+            "legendFormat": "Total TVL"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "thresholds"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+      },
+      {
+        "id": 4,
+        "title": "Security Events (24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(increase(security_events_total[24h]))",
+            "legendFormat": "Security Events"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 50}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+      },
+      {
+        "id": 5,
+        "title": "Trading Volume Over Time",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(trading_volume_usd[5m])",
+            "legendFormat": "Volume Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "id": 6,
+        "title": "Order Execution Latency",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(trading_order_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th percentile"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(trading_order_execution_duration_seconds_bucket[5m]))",
+            "legendFormat": "50th percentile"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "id": 7,
+        "title": "MEV Attacks Detected",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(mev_attacks_detected_total[5m])",
+            "legendFormat": "MEV Attacks/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "green", "value": 0},
+                {"color": "yellow", "value": 0.1},
+                {"color": "red", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16}
+      },
+      {
+        "id": 8,
+        "title": "Flash Loan Attacks",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(flash_loan_attacks_detected_total[5m])",
+            "legendFormat": "Flash Loan Attacks/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16}
+      },
+      {
+        "id": 9,
+        "title": "Economic Attacks",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(economic_attacks_detected_total[5m])",
+            "legendFormat": "Economic Attacks/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16}
+      },
+      {
+        "id": 10,
+        "title": "Liquidity Pool TVL by Chain",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (chain_id) (liquidity_pool_tvl_usd)",
+            "legendFormat": "Chain {{ chain_id }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "id": 11,
+        "title": "Cross-Chain Transfer Status",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (status) (cross_chain_transfers_total)",
+            "legendFormat": "{{ status }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      },
+      {
+        "id": 12,
+        "title": "Service Health Status",
+        "type": "table",
+        "targets": [
+          {
+            "expr": "up",
+            "legendFormat": "{{ job }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+      },
+      {
+        "id": 13,
+        "title": "Order Fill Rate",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(orders_filled_total[5m]) / rate(orders_created_total[5m])",
+            "legendFormat": "Fill Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40}
+      },
+      {
+        "id": 14,
+        "title": "Gas Price by Chain",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "gas_price_gwei",
+            "legendFormat": "{{ chain_name }}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 40}
+      },
+      {
+        "id": 15,
+        "title": "Staking Rewards Distribution",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "rate(staking_rewards_distributed_total[5m])",
+            "legendFormat": "Rewards/sec"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 48}
+      },
+      {
+        "id": 16,
+        "title": "Governance Participation",
+        "type": "timeseries",
+        "targets": [
+          {
+            "expr": "governance_voting_participation_rate",
+            "legendFormat": "Participation Rate"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "color": {
+              "mode": "palette-classic"
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 48}
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "chain",
+          "type": "query",
+          "query": "label_values(chain_id)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        },
+        {
+          "name": "service",
+          "type": "query",
+          "query": "label_values(job)",
+          "refresh": 1,
+          "includeAll": true,
+          "multi": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Security Events",
+          "datasource": "Prometheus",
+          "expr": "security_events_total",
+          "iconColor": "red",
+          "enable": true
+        },
+        {
+          "name": "MEV Attacks",
+          "datasource": "Prometheus",
+          "expr": "mev_attacks_detected_total",
+          "iconColor": "orange",
+          "enable": true
+        }
+      ]
+    }
+  }
+}

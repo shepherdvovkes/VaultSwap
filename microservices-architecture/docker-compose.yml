@@ -102,7 +102,7 @@ services:
     networks:
       - ultrana-network
 
-  # Java Microservices
+  # Java Microservices - Enhanced DEX Architecture
   api-gateway:
     build:
       context: ./api-gateway
@@ -114,6 +114,10 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       CONSUL_HOST: consul
       CONSUL_PORT: 8500
+      # DEX-specific environment variables
+      ENABLE_MEV_PROTECTION: "true"
+      ENABLE_CROSS_CHAIN: "true"
+      SUPPORTED_CHAINS: "ethereum,bsc,polygon,arbitrum,base,solana"
     depends_on:
       - consul
       - redis
@@ -141,11 +145,14 @@ services:
     networks:
       - ultrana-network
 
+  # Enhanced Trading Service with DEX functionality
   trading-service:
     build:
       context: ./trading-service
       dockerfile: Dockerfile
     container_name: ultrana-trading-service
+    ports:
+      - "8081:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
       CONSUL_HOST: consul
@@ -156,6 +163,133 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # DEX Trading specific
+      ENABLE_AMM: "true"
+      ENABLE_ORDER_MATCHING: "true"
+      ENABLE_MEV_PROTECTION: "true"
+      MAX_SLIPPAGE: "0.05"
+      MIN_ORDER_SIZE: "0.001"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  # New Liquidity Service
+  liquidity-service:
+    build:
+      context: ./liquidity-service
+      dockerfile: Dockerfile
+    container_name: ultrana-liquidity-service
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # Liquidity specific
+      ENABLE_STAKING: "true"
+      ENABLE_FARMING: "true"
+      REWARD_CALCULATION_INTERVAL: "3600"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  # New Governance Service
+  governance-service:
+    build:
+      context: ./governance-service
+      dockerfile: Dockerfile
+    container_name: ultrana-governance-service
+    ports:
+      - "8083:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # Governance specific
+      VOTING_PERIOD: "604800"
+      PROPOSAL_THRESHOLD: "1000000"
+      QUORUM_THRESHOLD: "0.1"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  # Enhanced Security Service
+  security-service:
+    build:
+      context: ./security-service
+      dockerfile: Dockerfile
+    container_name: ultrana-security-service
+    ports:
+      - "8084:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # Security specific
+      ENABLE_MEV_DETECTION: "true"
+      ENABLE_FLASH_LOAN_PROTECTION: "true"
+      ENABLE_ECONOMIC_ATTACK_DETECTION: "true"
+      SECURITY_SCAN_INTERVAL: "60"
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - consul
+    networks:
+      - ultrana-network
+
+  # Enhanced Cross-Chain Service
+  cross-chain-service:
+    build:
+      context: ./cross-chain-service
+      dockerfile: Dockerfile
+    container_name: ultrana-cross-chain-service
+    ports:
+      - "8085:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      CONSUL_HOST: consul
+      CONSUL_PORT: 8500
+      DATABASE_URL: jdbc:postgresql://postgres:5432/ultrana_dex
+      DATABASE_USERNAME: ultrana
+      DATABASE_PASSWORD: ultrana_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      # Cross-chain specific
+      SUPPORTED_CHAINS: "ethereum,bsc,polygon,arbitrum,base,solana"
+      BRIDGE_SECURITY_LEVEL: "high"
+      CROSS_CHAIN_TIMEOUT: "3600"
     depends_on:
       - postgres
       - redis

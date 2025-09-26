@@ -1,0 +1,287 @@
+# Ultrana DEX Alerting Rules
+# DEX-specific alerting rules for security, performance, and business metrics
+
+groups:
+  # Security Alerts
+  - name: security_alerts
+    rules:
+      - alert: MEVAttackDetected
+        expr: increase(mev_attacks_detected_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: security-service
+        annotations:
+          summary: "MEV attack detected"
+          description: "MEV attack detected in the last 5 minutes. Count: {{ $value }}"
+
+      - alert: FlashLoanAttackDetected
+        expr: increase(flash_loan_attacks_detected_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: security-service
+        annotations:
+          summary: "Flash loan attack detected"
+          description: "Flash loan attack detected in the last 5 minutes. Count: {{ $value }}"
+
+      - alert: EconomicAttackDetected
+        expr: increase(economic_attacks_detected_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: high
+          service: security-service
+        annotations:
+          summary: "Economic attack detected"
+          description: "Economic attack detected in the last 5 minutes. Count: {{ $value }}"
+
+      - alert: OracleManipulationDetected
+        expr: increase(oracle_manipulation_detected_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: high
+          service: oracle-service
+        annotations:
+          summary: "Oracle manipulation detected"
+          description: "Oracle price manipulation detected in the last 5 minutes. Count: {{ $value }}"
+
+      - alert: HighSecurityEventRate
+        expr: rate(security_events_total[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          service: security-service
+        annotations:
+          summary: "High security event rate"
+          description: "Security event rate is {{ $value }} events per second"
+
+  # Trading Performance Alerts
+  - name: trading_performance_alerts
+    rules:
+      - alert: HighTradingLatency
+        expr: histogram_quantile(0.95, rate(trading_order_execution_duration_seconds_bucket[5m])) > 2
+        for: 2m
+        labels:
+          severity: warning
+          service: trading-service
+        annotations:
+          summary: "High trading latency"
+          description: "95th percentile trading latency is {{ $value }}s"
+
+      - alert: LowOrderFillRate
+        expr: rate(orders_filled_total[5m]) / rate(orders_created_total[5m]) < 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: trading-service
+        annotations:
+          summary: "Low order fill rate"
+          description: "Order fill rate is {{ $value | humanizePercentage }}"
+
+      - alert: HighSlippageRate
+        expr: rate(orders_rejected_slippage_total[5m]) / rate(orders_created_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: trading-service
+        annotations:
+          summary: "High slippage rejection rate"
+          description: "Slippage rejection rate is {{ $value | humanizePercentage }}"
+
+      - alert: TradingServiceDown
+        expr: up{job="trading-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: trading-service
+        annotations:
+          summary: "Trading service is down"
+          description: "Trading service has been down for more than 1 minute"
+
+  # Liquidity Alerts
+  - name: liquidity_alerts
+    rules:
+      - alert: LowLiquidityPool
+        expr: liquidity_pool_tvl_usd < 10000
+        for: 5m
+        labels:
+          severity: warning
+          service: liquidity-service
+        annotations:
+          summary: "Low liquidity pool TVL"
+          description: "Pool {{ $labels.pool_id }} has low TVL: ${{ $value }}"
+
+      - alert: HighLiquidityWithdrawalRate
+        expr: rate(liquidity_withdrawals_total[5m]) > 1000
+        for: 2m
+        labels:
+          severity: warning
+          service: liquidity-service
+        annotations:
+          summary: "High liquidity withdrawal rate"
+          description: "Liquidity withdrawal rate is {{ $value }} per second"
+
+      - alert: StakingRewardCalculationError
+        expr: increase(staking_reward_calculation_errors_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          service: liquidity-service
+        annotations:
+          summary: "Staking reward calculation error"
+          description: "Staking reward calculation error detected"
+
+  # Cross-Chain Alerts
+  - name: cross_chain_alerts
+    rules:
+      - alert: CrossChainTransferFailure
+        expr: rate(cross_chain_transfers_failed_total[5m]) / rate(cross_chain_transfers_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: cross-chain-service
+        annotations:
+          summary: "High cross-chain transfer failure rate"
+          description: "Cross-chain transfer failure rate is {{ $value | humanizePercentage }}"
+
+      - alert: BridgeSecurityAlert
+        expr: increase(bridge_security_events_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          service: cross-chain-service
+        annotations:
+          summary: "Bridge security alert"
+          description: "Bridge security event detected"
+
+      - alert: CrossChainServiceDown
+        expr: up{job="cross-chain-service"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: cross-chain-service
+        annotations:
+          summary: "Cross-chain service is down"
+          description: "Cross-chain service has been down for more than 1 minute"
+
+  # Governance Alerts
+  - name: governance_alerts
+    rules:
+      - alert: ProposalExecutionFailure
+        expr: increase(proposals_execution_failed_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+          service: governance-service
+        annotations:
+          summary: "Proposal execution failure"
+          description: "Proposal execution failed"
+
+      - alert: LowVotingParticipation
+        expr: governance_voting_participation_rate < 0.1
+        for: 1h
+        labels:
+          severity: info
+          service: governance-service
+        annotations:
+          summary: "Low voting participation"
+          description: "Voting participation rate is {{ $value | humanizePercentage }}"
+
+  # System Performance Alerts
+  - name: system_performance_alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighDiskUsage
+        expr: 100 - ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High disk usage"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: DatabaseConnectionPoolExhausted
+        expr: database_connections_active / database_connections_max > 0.9
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "Database connection pool is {{ $value | humanizePercentage }} full"
+
+  # Business Metrics Alerts
+  - name: business_metrics_alerts
+    rules:
+      - alert: LowTradingVolume
+        expr: trading_volume_24h_usd < 1000000
+        for: 1h
+        labels:
+          severity: info
+        annotations:
+          summary: "Low trading volume"
+          description: "24h trading volume is ${{ $value }}"
+
+      - alert: HighGasFees
+        expr: avg(gas_price_gwei) > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High gas fees"
+          description: "Average gas price is {{ $value }} Gwei"
+
+      - alert: LowLiquidityAcrossPools
+        expr: sum(liquidity_pool_tvl_usd) < 10000000
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low total liquidity"
+          description: "Total liquidity across all pools is ${{ $value }}"
+
+  # Service Health Alerts
+  - name: service_health_alerts
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service is down"
+          description: "{{ $labels.job }} service is down"
+
+      - alert: ServiceHighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate"
+          description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.job }}"
+
+      - alert: ServiceHighLatency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High latency"
+          description: "95th percentile latency is {{ $value }}s for {{ $labels.job }}"

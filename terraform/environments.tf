@@ -72,6 +72,12 @@ variable "operating_systems" {
   default     = ["linux", "windows", "macos"]
 }
 
+variable "gcp_project_id" {
+  description = "GCP Project ID (required for GCP deployment)"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
   description = "Cloud region"
   type        = string
@@ -154,7 +160,7 @@ data "aws_caller_identity" "current" {
   count = var.cloud_provider == "aws" ? 1 : 0
 }
 
-# VPC Configuration
+# VPC Configuration (AWS only)
 module "vpc" {
   count  = var.cloud_provider == "aws" ? 1 : 0
   source = "./modules/vpc"
@@ -164,6 +170,37 @@ module "vpc" {
   availability_zones  = slice(data.aws_availability_zones.available[0].names, 0, 2)
   public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+  
+  tags = local.common_tags
+}
+
+# GCP Configuration
+module "gcp" {
+  count  = var.cloud_provider == "gcp" ? 1 : 0
+  source = "./modules/gcp"
+  
+  environment        = var.environment
+  project_id        = var.gcp_project_id
+  region            = var.region
+  operating_systems = var.operating_systems
+  instance_count    = local.current_config.instance_count
+  machine_type      = local.current_config.instance_type
+  storage_size      = local.current_config.storage_size
+  monitoring_level  = local.current_config.monitoring_level
+  
+  tags = local.common_tags
+}
+
+# Local Deployment Configuration
+module "local_deployment" {
+  count  = var.cloud_provider == "local" ? 1 : 0
+  source = "./modules/local-deployment"
+  
+  environment        = var.environment
+  operating_systems = var.operating_systems
+  instance_count    = local.current_config.instance_count
+  storage_size      = local.current_config.storage_size
+  monitoring_level  = local.current_config.monitoring_level
   
   tags = local.common_tags
 }
@@ -355,14 +392,31 @@ output "environment_info" {
 
 output "infrastructure_endpoints" {
   description = "Infrastructure endpoints"
-  value = var.cloud_provider == "aws" ? {
-    load_balancer_dns = module.load_balancer[0].dns_name
-    load_balancer_zone_id = module.load_balancer[0].zone_id
-    rds_endpoint = module.rds[0].endpoint
-    rds_port = module.rds[0].port
-    monitoring_dashboard = module.monitoring[0].dashboard_url
-    backup_vault = module.backup[0].vault_name
-  } : null
+  value = {
+    aws = var.cloud_provider == "aws" ? {
+      load_balancer_dns = module.load_balancer[0].dns_name
+      load_balancer_zone_id = module.load_balancer[0].zone_id
+      rds_endpoint = module.rds[0].endpoint
+      rds_port = module.rds[0].port
+      monitoring_dashboard = module.monitoring[0].dashboard_url
+      backup_vault = module.backup[0].vault_name
+    } : null
+    gcp = var.cloud_provider == "gcp" ? {
+      load_balancer_ip = module.gcp[0].load_balancer_ip
+      database_connection_name = module.gcp[0].database_connection_name
+      database_private_ip = module.gcp[0].database_private_ip
+      instance_ips = module.gcp[0].instance_ips
+    } : null
+    local = var.cloud_provider == "local" ? {
+      application_url = module.local_deployment[0].service_urls.application
+      database_url = module.local_deployment[0].service_urls.database
+      redis_url = module.local_deployment[0].service_urls.redis
+      prometheus_url = module.local_deployment[0].service_urls.prometheus
+      grafana_url = module.local_deployment[0].service_urls.grafana
+      docker_compose_file = module.local_deployment[0].docker_compose_file
+      environment_file = module.local_deployment[0].environment_file
+    } : null
+  }
 }
 
 output "security_info" {
@@ -393,9 +447,22 @@ output "deployment_instructions" {
        terraform output
     
     5. Access the environment:
-       - Load Balancer: ${var.cloud_provider == "aws" ? module.load_balancer[0].dns_name : "N/A"}
-       - Database: ${var.cloud_provider == "aws" ? module.rds[0].endpoint : "N/A"}
-       - Monitoring: ${var.cloud_provider == "aws" ? module.monitoring[0].dashboard_url : "N/A"}
+       %{ if var.cloud_provider == "aws" ~}
+       - Load Balancer: ${module.load_balancer[0].dns_name}
+       - Database: ${module.rds[0].endpoint}
+       - Monitoring: ${module.monitoring[0].dashboard_url}
+       %{ endif ~}
+       %{ if var.cloud_provider == "gcp" ~}
+       - Load Balancer: ${module.gcp[0].load_balancer_ip}
+       - Database: ${module.gcp[0].database_connection_name}
+       - Instances: ${join(", ", module.gcp[0].instance_ips.linux)}
+       %{ endif ~}
+       %{ if var.cloud_provider == "local" ~}
+       - Application: ${module.local_deployment[0].service_urls.application}
+       - Database: ${module.local_deployment[0].service_urls.database}
+       - Monitoring: ${module.local_deployment[0].service_urls.prometheus}
+       - Docker Compose: ${module.local_deployment[0].docker_compose_file}
+       %{ endif ~}
     
     6. Clean up (when done):
        terraform destroy -var="environment=${var.environment}" -var="cloud_provider=${var.cloud_provider}"
