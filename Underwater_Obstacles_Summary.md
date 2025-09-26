@@ -55,7 +55,7 @@
 
 ---
 
-## 🎯 **HASKELL DEVELOPER - Underwater Obstacles**
+## **HASKELL DEVELOPER - Underwater Obstacles**
 
 ### **1. Lazy Evaluation in Financial Code**
 - **Hidden Issue**: Lazy evaluation can cause memory issues in trading systems
@@ -171,7 +171,7 @@
 
 ---
 
-## 🤖 **MEV BOT WARFARE - Critical Underwater Obstacle**
+## **MEV BOT WARFARE - Critical Underwater Obstacle**
 
 ### **The MEV Problem:**
 MEV (Maximal Extractable Value) bots are sophisticated automated systems that exploit transaction ordering to extract value from users. This is a **CRITICAL** underwater obstacle that can destroy user trust and platform reputation.
@@ -600,7 +600,7 @@ pub fn calculate_rewards(user: &User) -> u64 {
 
 ---
 
-## 🎯 **EARLY WARNING SIGNS**
+## **EARLY WARNING SIGNS**
 
 ### **For Rust Developer:**
 - Spending more time fighting with Anchor than building features
@@ -632,7 +632,7 @@ pub fn calculate_rewards(user: &User) -> u64 {
 
 ---
 
-## 🚀 **MITIGATION STRATEGIES**
+## **MITIGATION STRATEGIES**
 
 ### **Immediate Actions:**
 1. **Set up comprehensive monitoring** from day one
@@ -661,7 +661,7 @@ pub fn calculate_rewards(user: &User) -> u64 {
 
 ---
 
-## 🎯 **CONCLUSION**
+## **CONCLUSION**
 
 These underwater obstacles are the hidden challenges that can sink a project if not anticipated. The key is to:
 

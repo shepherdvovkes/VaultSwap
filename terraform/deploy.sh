@@ -224,49 +224,49 @@ run_health_checks() {
     
     # Check Prometheus
     if curl -f http://localhost:9090/api/v1/query?query=up &> /dev/null; then
-        log "✅ Prometheus is healthy"
+        log "Prometheus is healthy"
     else
-        error "❌ Prometheus health check failed"
+        error "Prometheus health check failed"
     fi
     
     # Check Grafana
     if curl -f http://localhost:3000/api/health &> /dev/null; then
-        log "✅ Grafana is healthy"
+        log "Grafana is healthy"
     else
-        error "❌ Grafana health check failed"
+        error "Grafana health check failed"
     fi
     
     # Check Elasticsearch
     if curl -f http://localhost:9200/_cluster/health &> /dev/null; then
-        log "✅ Elasticsearch is healthy"
+        log "Elasticsearch is healthy"
     else
-        error "❌ Elasticsearch health check failed"
+        error "Elasticsearch health check failed"
     fi
     
     # Check Kibana
     if curl -f http://localhost:5601/api/status &> /dev/null; then
-        log "✅ Kibana is healthy"
+        log "Kibana is healthy"
     else
-        error "❌ Kibana health check failed"
+        error "Kibana health check failed"
     fi
     
     # Check attack simulators
     if docker ps | grep -q mev-simulator; then
-        log "✅ MEV simulator is running"
+        log "MEV simulator is running"
     else
-        error "❌ MEV simulator is not running"
+        error "MEV simulator is not running"
     fi
     
     if docker ps | grep -q flash-loan-simulator; then
-        log "✅ Flash loan simulator is running"
+        log "Flash loan simulator is running"
     else
-        error "❌ Flash loan simulator is not running"
+        error "Flash loan simulator is not running"
     fi
     
     if docker ps | grep -q oracle-simulator; then
-        log "✅ Oracle simulator is running"
+        log "Oracle simulator is running"
     else
-        error "❌ Oracle simulator is not running"
+        error "Oracle simulator is not running"
     fi
     
     log "Health checks completed"

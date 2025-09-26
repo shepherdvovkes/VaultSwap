@@ -426,7 +426,7 @@ Duration: {results['duration']:.2f} seconds
         report += "\n## Detailed Results\n"
         
         for result in results['test_results']:
-            status_emoji = "✅" if result['status'] == 'passed' else "❌"
+            status_emoji = "PASS" if result['status'] == 'passed' else "FAIL"
             report += f"""
 ### {status_emoji} {result['test_name']} ({result['test_id']})
 - Status: {result['status'].upper()}

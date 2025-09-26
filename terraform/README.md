@@ -2,11 +2,11 @@
 
 A comprehensive Terraform-based attack simulation environment for testing DEX security measures against various attack vectors including MEV attacks, flash loan attacks, and oracle manipulation.
 
-## 🎯 Overview
+## Overview
 
 This environment provides a complete testing infrastructure to validate the security measures outlined in the Secure DEX Development Plan. It simulates real-world attack scenarios to test the effectiveness of security implementations.
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -28,7 +28,7 @@ This environment provides a complete testing infrastructure to validate the secu
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -60,7 +60,7 @@ This environment provides a complete testing infrastructure to validate the secu
    ./attack-simulations/scripts/run_attack_simulation.sh
    ```
 
-## 📊 Monitoring Dashboards
+## Monitoring Dashboards
 
 Once deployed, access the monitoring dashboards:
 
@@ -69,7 +69,7 @@ Once deployed, access the monitoring dashboards:
 - **Elasticsearch**: http://localhost:9200
 - **Kibana**: http://localhost:5601
 
-## 🔧 Configuration
+## Configuration
 
 ### Attack Simulation Configuration
 
@@ -85,7 +85,7 @@ Each attack type has its own configuration file:
 - **Grafana**: `attack-simulations/monitoring/grafana-dashboard.json`
 - **AlertManager**: `attack-simulations/monitoring/alertmanager.yml`
 
-## 🧪 Testing
+## Testing
 
 ### Automated Security Tests
 
@@ -119,7 +119,7 @@ Test system throughput capabilities:
 python3 attack-simulations/scripts/throughput_test.py --duration 60 --concurrent 20
 ```
 
-## 📈 Attack Types
+## Attack Types
 
 ### MEV Attacks
 
@@ -182,7 +182,7 @@ python3 attack-simulations/scripts/throughput_test.py --duration 60 --concurrent
    - Governance-based attacks
    - System configuration exploitation
 
-## 📊 Metrics and Monitoring
+## Metrics and Monitoring
 
 ### Key Metrics
 
@@ -202,7 +202,7 @@ The system includes comprehensive alerting for:
 - Security event detection
 - Performance degradation
 
-## 🔒 Security Features
+## Security Features
 
 ### Attack Detection
 
@@ -225,7 +225,7 @@ The system includes comprehensive alerting for:
 - Real-time alerting
 - Comprehensive logging
 
-## 📝 Usage Examples
+## Usage Examples
 
 ### Running MEV Attack Simulation
 
@@ -267,7 +267,7 @@ python3 attack-simulations/oracle-manipulation/simulate_price_flash_loan_attack.
     --config attack-simulations/oracle-manipulation/config.json
 ```
 
-## 🛠️ Development
+## Development
 
 ### Adding New Attack Types
 
@@ -292,7 +292,7 @@ Modify test parameters in the configuration files:
 }
 ```
 
-## 📋 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -319,7 +319,7 @@ Check logs in the following locations:
 - **Docker Containers**: `docker logs <container_name>`
 - **System Logs**: `/var/log/`
 
-## 🔄 Maintenance
+## Maintenance
 
 ### Regular Tasks
 
@@ -346,14 +346,14 @@ Regularly backup:
 - Monitoring data
 - Log files
 
-## 📚 Documentation
+## Documentation
 
 - [Secure DEX Development Plan](../Secure_DEX_Development_Plan.md)
 - [Attack Simulation API Documentation](docs/api.md)
 - [Monitoring Setup Guide](docs/monitoring.md)
 - [Security Testing Guide](docs/security-testing.md)
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -361,11 +361,11 @@ Regularly backup:
 4. Add tests
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
+## Support
 
 For support and questions:
 

@@ -9,7 +9,7 @@ This platform encompasses key functionalities such as pooling, liquidity provisi
 
 ## How to run the project?
 
-#### 🚀 Are you ready to enter the Web3 Era? Let's explore a decentralized world today!
+#### Are you ready to enter the Web3 Era? Let's explore a decentralized world today!
 
 ### Clone
 

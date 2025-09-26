@@ -190,7 +190,7 @@ Objective: Enable backend APIs for wallet connection and session tracking.
   Implement logic for address verification, wallet type detection, and session state handling.
  Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
 
- 📈 3. Trading Page API Enhancements
+ 3. Trading Page API Enhancements
 Objective:  Serve real-time trading data and historical metrics.
 Extend backend services to:
  Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
@@ -205,7 +205,7 @@ Objective:  Maintain reliable external references.
  Provide 24-hour trading volume metrics for each token.
  Implement an admin-friendly system for validating and updating links dynamically without redeploying.
 
-📊 5. Dashboard Backend Enhancements
+5. Dashboard Backend Enhancements
 Objective:  Provide key performance and trading metrics.
  Design APIs to return:
  24h Volume, Open Interest, Long/Short Ratios
@@ -225,7 +225,7 @@ Objective:  Remove legacy testnet dependencies (e.g., U2U).
 Validate that no testnet RPCs or contract addresses remain in production code.
 Conduct final testing on production/mainnet environments.
 
- ✅ General Expectations
+ General Expectations
  Ensure all APIs are documented via Swagger/OpenAPI.
 Apply proper authentication and authorization using Spring Security.
 Write unit/integration tests using JUnit and Mockito.
@@ -248,7 +248,7 @@ Objective: Enable backend APIs for wallet connection and session tracking.
   Implement logic for address verification, wallet type detection, and session state handling.
  Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
 
- 📈 3. Trading Page API Enhancements
+ 3. Trading Page API Enhancements
 Objective:  Serve real-time trading data and historical metrics.
 Extend backend services to:
  Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
@@ -263,7 +263,7 @@ Objective:  Maintain reliable external references.
  Provide 24-hour trading volume metrics for each token.
  Implement an admin-friendly system for validating and updating links dynamically without redeploying.
 
-📊 5. Dashboard Backend Enhancements
+5. Dashboard Backend Enhancements
 Objective:  Provide key performance and trading metrics.
  Design APIs to return:
  24h Volume, Open Interest, Long/Short Ratios
@@ -283,7 +283,7 @@ Objective:  Remove legacy testnet dependencies (e.g., U2U).
 Validate that no testnet RPCs or contract addresses remain in production code.
 Conduct final testing on production/mainnet environments.
 
- ✅ General Expectations
+ General Expectations
  Ensure all APIs are documented via Swagger/OpenAPI.
 Apply proper authentication and authorization using Spring Security.
 Write unit/integration tests using JUnit and Mockito.
@@ -306,7 +306,7 @@ Objective: Enable backend APIs for wallet connection and session tracking.
   Implement logic for address verification, wallet type detection, and session state handling.
  Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
 
- 📈 3. Trading Page API Enhancements
+ 3. Trading Page API Enhancements
 Objective:  Serve real-time trading data and historical metrics.
 Extend backend services to:
  Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
@@ -321,7 +321,7 @@ Objective:  Maintain reliable external references.
  Provide 24-hour trading volume metrics for each token.
  Implement an admin-friendly system for validating and updating links dynamically without redeploying.
 
-📊 5. Dashboard Backend Enhancements
+5. Dashboard Backend Enhancements
 Objective:  Provide key performance and trading metrics.
  Design APIs to return:
  24h Volume, Open Interest, Long/Short Ratios
@@ -341,7 +341,7 @@ Objective:  Remove legacy testnet dependencies (e.g., U2U).
 Validate that no testnet RPCs or contract addresses remain in production code.
 Conduct final testing on production/mainnet environments.
 
- ✅ General Expectations
+ General Expectations
  Ensure all APIs are documented via Swagger/OpenAPI.
 Apply proper authentication and authorization using Spring Security.
 Write unit/integration tests using JUnit and Mockito.
@@ -364,7 +364,7 @@ Objective: Enable backend APIs for wallet connection and session tracking.
   Implement logic for address verification, wallet type detection, and session state handling.
  Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
 
- 📈 3. Trading Page API Enhancements
+ 3. Trading Page API Enhancements
 Objective:  Serve real-time trading data and historical metrics.
 Extend backend services to:
  Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
@@ -379,7 +379,7 @@ Objective:  Maintain reliable external references.
  Provide 24-hour trading volume metrics for each token.
  Implement an admin-friendly system for validating and updating links dynamically without redeploying.
 
-📊 5. Dashboard Backend Enhancements
+5. Dashboard Backend Enhancements
 Objective:  Provide key performance and trading metrics.a
  Securely handle modal triggers and token metadata requests.
 
@@ -389,7 +389,7 @@ Objective:  Remove legacy testnet dependencies (e.g., U2U).
 Validate that no testnet RPCs or contract addresses remain in production code.
 Conduct final testing on production/mainnet environments.
 
- ✅ General Expectations
+ General Expectations
  Ensure all APIs are documented via Swagger/OpenAPI.
 Apply proper authentication and authorization using Spring Security.
 Write unit/integration tests using JUnit and Mockito.
@@ -413,7 +413,7 @@ Objective: Enable backend APIs for wallet connection and session tracking.
   Implement logic for address verification, wallet type detection, and session state handling.
  Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
 
- 📈 3. Trading Page API Enhancements
+ 3. Trading Page API Enhancements
 Objective:  Serve real-time trading data and historical metrics.
 Extend backend services to:
  Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
@@ -428,7 +428,7 @@ Objective:  Maintain reliable external references.
  Provide 24-hour trading volume metrics for each token.
  Implement an admin-friendly system for validating and updating links dynamically without redeploying.
 
-📊 5. Dashboard Backend Enhancements
+5. Dashboard Backend Enhancements
 Objective:  Provide key performance and trading metrics.
  Design APIs to return:
  24h Volume, Open Interest, Long/Short Ratios
@@ -448,7 +448,7 @@ Objective:  Remove legacy testnet dependencies (e.g., U2U).
 Validate that no testnet RPCs or contract addresses remain in production code.
 Conduct final testing on production/mainnet environments.
 
- ✅ General Expectations
+ General Expectations
  Ensure all APIs are documented via Swagger/OpenAPI.
 Apply proper authentication and authorization using Spring Security.
 Write unit/integration tests using JUnit and Mockito.
@@ -472,7 +472,7 @@ Objective: Enable backend APIs for wallet connection and session tracking.
   Implement logic for address verification, wallet type detection, and session state handling.
  Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
 
- 📈 3. Trading Page API Enhancements
+ 3. Trading Page API Enhancements
 Objective:  Serve real-time trading data and historical metrics.
 Extend backend services to:
  Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
@@ -487,7 +487,7 @@ Objective:  Maintain reliable external references.
  Provide 24-hour trading volume metrics for each token.
  Implement an admin-friendly system for validating and updating links dynamically without redeploying.
 
-📊 5. Dashboard Backend Enhancements
+5. Dashboard Backend Enhancements
 Objective:  Provide key performance and trading metrics.
  Design APIs to return:
  24h Volume, Open Interest, Long/Short Ratios
@@ -507,7 +507,7 @@ Objective:  Remove legacy testnet dependencies (e.g., U2U).
 Validate that no testnet RPCs or contract addresses remain in production code.
 Conduct final testing on production/mainnet environments.
 
- ✅ General Expectations
+ General Expectations
  Ensure all APIs are documented via Swagger/OpenAPI.
 Apply proper authentication and authorization using Spring Security.
 Write unit/integration tests using JUnit and Mockito.
