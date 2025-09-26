@@ -522,6 +522,158 @@ services:
       - attack-simulation-network
     restart: unless-stopped
 
+  # Reentrancy Attack Simulator
+  reentrancy-simulator:
+    build:
+      context: ./attack-simulations/reentrancy-attacks
+      dockerfile: Dockerfile
+    container_name: reentrancy-attack-simulator
+    ports:
+      - "8083:8083"
+    environment:
+      - SIMULATION_MODE=reentrancy
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/reentrancy-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # Economic Attack Simulator
+  economic-simulator:
+    build:
+      context: ./attack-simulations/economic-attacks
+      dockerfile: Dockerfile
+    container_name: economic-attack-simulator
+    ports:
+      - "8084:8084"
+    environment:
+      - SIMULATION_MODE=economic
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/economic-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # Governance Attack Simulator
+  governance-simulator:
+    build:
+      context: ./attack-simulations/governance-attacks
+      dockerfile: Dockerfile
+    container_name: governance-attack-simulator
+    ports:
+      - "8085:8085"
+    environment:
+      - SIMULATION_MODE=governance
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/governance-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # Cross-Chain Bridge Attack Simulator
+  cross-chain-simulator:
+    build:
+      context: ./attack-simulations/cross-chain-attacks
+      dockerfile: Dockerfile
+    container_name: cross-chain-attack-simulator
+    ports:
+      - "8086:8086"
+    environment:
+      - SIMULATION_MODE=cross_chain
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/cross-chain-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # Staking Attack Simulator
+  staking-simulator:
+    build:
+      context: ./attack-simulations/staking-attacks
+      dockerfile: Dockerfile
+    container_name: staking-attack-simulator
+    ports:
+      - "8087:8087"
+    environment:
+      - SIMULATION_MODE=staking
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/staking-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # DDoS Attack Simulator
+  ddos-simulator:
+    build:
+      context: ./attack-simulations/ddos-attacks
+      dockerfile: Dockerfile
+    container_name: ddos-attack-simulator
+    ports:
+      - "8088:8088"
+    environment:
+      - SIMULATION_MODE=ddos
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/ddos-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # Social Engineering Attack Simulator
+  social-engineering-simulator:
+    build:
+      context: ./attack-simulations/social-engineering-attacks
+      dockerfile: Dockerfile
+    container_name: social-engineering-attack-simulator
+    ports:
+      - "8089:8089"
+    environment:
+      - SIMULATION_MODE=social_engineering
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/social-engineering-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
+  # Supply Chain Attack Simulator
+  supply-chain-simulator:
+    build:
+      context: ./attack-simulations/supply-chain-attacks
+      dockerfile: Dockerfile
+    container_name: supply-chain-attack-simulator
+    ports:
+      - "8090:8090"
+    environment:
+      - SIMULATION_MODE=supply_chain
+      - LOG_LEVEL=INFO
+      - MONITORING_ENABLED=${var.monitoring_enabled}
+    volumes:
+      - ./attack-simulations/supply-chain-attacks:/app
+      - ./attack-simulations/logs:/app/logs
+    networks:
+      - attack-simulation-network
+    restart: unless-stopped
+
   # Monitoring Services (if enabled)
   prometheus:
     image: prom/prometheus:latest
