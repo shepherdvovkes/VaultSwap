@@ -1,0 +1,199 @@
+# Prometheus Alerting Rules for Attack Simulation Monitoring
+groups:
+- name: attack-simulation-alerts
+  rules:
+  # MEV Attack Alerts
+  - alert: MEVAttackDetected
+    expr: rate(mev_attacks_total[5m]) > 0.1
+    for: 1m
+    labels:
+      severity: warning
+      category: mev
+    annotations:
+      summary: "MEV attack detected in simulation"
+      description: "MEV attack rate is {{ $value }} attacks per second"
+      
+  - alert: HighMEVAttackSuccessRate
+    expr: mev_attack_success_rate > 0.5
+    for: 2m
+    labels:
+      severity: critical
+      category: mev
+    annotations:
+      summary: "High MEV attack success rate"
+      description: "MEV attack success rate is {{ $value }}%"
+      
+  - alert: MEVAttackProfitAnomaly
+    expr: rate(mev_attack_profit_sum[5m]) > 1000
+    for: 1m
+    labels:
+      severity: warning
+      category: mev
+    annotations:
+      summary: "High MEV attack profit detected"
+      description: "MEV attack profit rate is {{ $value }} per second"
+
+  # Flash Loan Attack Alerts
+  - alert: FlashLoanAttackDetected
+    expr: rate(flash_loan_attacks_total[5m]) > 0.05
+    for: 1m
+    labels:
+      severity: warning
+      category: flash-loan
+    annotations:
+      summary: "Flash loan attack detected in simulation"
+      description: "Flash loan attack rate is {{ $value }} attacks per second"
+      
+  - alert: HighFlashLoanAttackSuccessRate
+    expr: flash_loan_attack_success_rate > 0.3
+    for: 2m
+    labels:
+      severity: critical
+      category: flash-loan
+    annotations:
+      summary: "High flash loan attack success rate"
+      description: "Flash loan attack success rate is {{ $value }}%"
+      
+  - alert: LargeFlashLoanAmount
+    expr: flash_loan_amount > 10000000
+    for: 1m
+    labels:
+      severity: warning
+      category: flash-loan
+    annotations:
+      summary: "Large flash loan amount detected"
+      description: "Flash loan amount is {{ $value }}"
+
+  # Oracle Manipulation Alerts
+  - alert: OracleManipulationDetected
+    expr: rate(oracle_attacks_total[5m]) > 0.02
+    for: 1m
+    labels:
+      severity: warning
+      category: oracle
+    annotations:
+      summary: "Oracle manipulation attack detected"
+      description: "Oracle attack rate is {{ $value }} attacks per second"
+      
+  - alert: HighOraclePriceDeviation
+    expr: oracle_price_deviation > 0.05
+    for: 1m
+    labels:
+      severity: critical
+      category: oracle
+    annotations:
+      summary: "High oracle price deviation detected"
+      description: "Oracle price deviation is {{ $value }}%"
+      
+  - alert: LowOracleConsensus
+    expr: oracle_consensus_score < 0.8
+    for: 2m
+    labels:
+      severity: warning
+      category: oracle
+    annotations:
+      summary: "Low oracle consensus score"
+      description: "Oracle consensus score is {{ $value }}"
+
+  # General Attack Alerts
+  - alert: HighAttackSuccessRate
+    expr: (rate(mev_attacks_total{status="success"}[5m]) + rate(flash_loan_attacks_total{status="success"}[5m]) + rate(oracle_attacks_total{status="success"}[5m])) > 0.1
+    for: 1m
+    labels:
+      severity: critical
+      category: general
+    annotations:
+      summary: "High overall attack success rate"
+      description: "Combined attack success rate is {{ $value }} attacks per second"
+      
+  - alert: AttackDetectionTimeHigh
+    expr: histogram_quantile(0.95, rate(mev_detection_time_seconds_bucket[5m])) > 10
+    for: 2m
+    labels:
+      severity: warning
+      category: detection
+    annotations:
+      summary: "High attack detection time"
+      description: "95th percentile detection time is {{ $value }} seconds"
+      
+  - alert: NoAttackSimulationActivity
+    expr: (rate(mev_attacks_total[10m]) + rate(flash_loan_attacks_total[10m]) + rate(oracle_attacks_total[10m])) == 0
+    for: 5m
+    labels:
+      severity: warning
+      category: system
+    annotations:
+      summary: "No attack simulation activity"
+      description: "No attack simulation activity detected for 10 minutes"
+
+  # System Health Alerts
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+    for: 2m
+    labels:
+      severity: warning
+      category: system
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage is {{ $value }}%"
+      
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+    for: 2m
+    labels:
+      severity: warning
+      category: system
+    annotations:
+      summary: "High CPU usage"
+      description: "CPU usage is {{ $value }}%"
+      
+  - alert: DiskSpaceLow
+    expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.9
+    for: 2m
+    labels:
+      severity: critical
+      category: system
+    annotations:
+      summary: "Low disk space"
+      description: "Disk usage is {{ $value }}%"
+
+  # Service Health Alerts
+  - alert: PrometheusDown
+    expr: up{job="prometheus"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      category: service
+    annotations:
+      summary: "Prometheus is down"
+      description: "Prometheus service is not responding"
+      
+  - alert: GrafanaDown
+    expr: up{job="grafana"} == 0
+    for: 1m
+    labels:
+      severity: warning
+      category: service
+    annotations:
+      summary: "Grafana is down"
+      description: "Grafana service is not responding"
+      
+  - alert: ElasticsearchDown
+    expr: up{job="elasticsearch"} == 0
+    for: 1m
+    labels:
+      severity: warning
+      category: service
+    annotations:
+      summary: "Elasticsearch is down"
+      description: "Elasticsearch service is not responding"
+      
+  - alert: KibanaDown
+    expr: up{job="kibana"} == 0
+    for: 1m
+    labels:
+      severity: warning
+      category: service
+    annotations:
+      summary: "Kibana is down"
+      description: "Kibana service is not responding"

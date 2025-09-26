@@ -1,0 +1,517 @@
+Our platform encompasses key functionalities such as pooling, liquidity provision, 
+staking (farming), and trading. We are in the process of developing a decentralized 
+exchange (DEX) platform for traders within the EVM network, with plans to integrate 
+an Automated Market Maker (AMM) mechanism.
+We also need to implement the mobile design.
+
+There are several modifications required to align the platform with our evolving vision. 
+
+An important aspect to consider is the animation on the landing page. This is crucial because 
+the landing page is the first thing users see when they visit the site. While there is
+ currently an animation, feedback from visual experts and developers suggests that it would be
+  better to remove it. The animation is too tiring on the eyes, and removing it could 
+  improve the overall user experience by creating a cleaner design.
+
+  We also need to implement the mobile design.
+
+There are several modifications required to align the platform with our evolving vision. 
+
+An important aspect to consider is the animation on the landing page. 
+This is crucial because the landing page is the first thing users see when they visit the site.
+While there is currently an animation, feedback from visual experts and developers suggests 
+that it would be better to remove it. The animation is too tiring on the eyes, and
+removing it could improve the overall user experience by creating a cleaner design.
+
+Haskell Developer Requirements
+
+We are seeking experienced Haskell developers to join our team in scaling and optimizing our EVM-based blockchain platform. The role involves working on core DeFi components including trading, staking, and liquidity pooling. This is a unique opportunity to contribute to a cutting-edge project at the intersection of blockchain and functional programming.
+Responsibilities
+·         Design, develop, and maintain high-assurance Haskell codebases for blockchain infrastructure.
+·         Collaborate with engineering teams to implement features like staking, trading, and liquidity pools.
+·         Conduct thorough testing and formal verification of code when applicable.
+·         Contribute to the performance optimization and scalability of our systems.
+·         Participate in code reviews, architectural decisions, and documentation.
+·         Optionally work with Plutus or other smart contract DSLs.
+Requirements
+·         Strong experience with Haskell and functional programming principles.
+·         Familiarity with EVM concepts and DeFi protocols is a strong plus.
+·         Understanding of type systems, immutability, and formal verification.
+·         Experience with tools like Stack, Cabal, or Nix.
+·         Comfortable working in a remote and collaborative environment.
+·         Good communication skills and ability to write clean, maintainable code.
+Preferred Qualifications
+·         Experience contributing to open-source Haskell projects.
+·         Background in cryptography or blockchain protocol development.
+·         Knowledge of smart contract platforms such as Cardano or Ethereum.
+·         Familiarity with agile development methodologies.
+
+Rust Requirements for EVM Chain Platform: Comprehensive Task List
+🦀 Overview – Solana Blockchain Integration
+
+About Us
+We are an innovative DeFi platform expanding beyond the EVM ecosystem. Our existing infrastructure supports
+ advanced decentralized features such as pooling, liquidity provision, staking/farming,
+  and trading within the EVM-compatible network. As we scale, we are building a decentralized 
+  exchange (DEX) and integrating an Automated Market Maker (AMM) protocol.
+To support our next milestone, we’re integrating Solana into our stack — and we're looking for 
+an experienced Senior Rust Engineer to lead the development of Solana programs (smart contracts)
+ and the integration layer.
+
+Key Responsibilities
+Architect, design, and implement on-chain Solana programs using Rust and Anchor framework.
+Integrate Solana-based functionality with our existing EVM-based infrastructure and DEX components.
+Develop and maintain secure, gas-optimized, and upgradeable smart contracts.
+Collaborate with frontend, backend, and devops teams to integrate Solana RPC and program interfaces.
+Participate in code reviews, security audits, and test coverage.
+Work with cross-functional teams to plan and deliver new features and protocols across both Solana and 
+EVM chains.
+
+
+
+Required Skills & Qualifications
+3+ years of professional experience in Rust, including performance optimization and memory safety.
+1+ year of hands-on experience developing and deploying Solana smart contracts (programs),
+ideally with Anchor.
+Strong knowledge of Solana architecture, runtime, accounts model, and Solana Program Library (SPL).
+Experience in building and maintaining production-ready blockchain applications or protocols.
+Smart Contract Requirements for DEX staking Platform: Comprehensive Task List
+Objective
+The smart contract development team(devops & secure engineers and 2 smart contract engineers) will
+ design, optimize, and secure blockchain-based contracts to enhance the functionality,
+  interoperability, and security of our DEX staking platform.
+
+Project Requirements & Deliverables
+
+Smart Contract Development & Core Enhancements
+- Develop and deploy efficient, gas-optimized smart contracts for trading, liquidity pools, and governance.
+- Implement upgradeable smart contracts using OpenZeppelin's proxy patterns.
+  - Ensure all contracts comply with ERC-20, ERC-721, ERC-1155, and ERC-4626 standards.
+- Develop vesting schedules and tokenomics logic for rewards and staking mechanisms.
+
+Security & Audit Readiness
+- Conduct formal verification and unit testing using frameworks like Foundry and Hardhat.
+- Implement role-based access control (RBAC) to prevent unauthorized contract interactions.
+- Integrate anti-bot measures to mitigate front-running and sandwich attacks.
+- Develop self-healing smart contract features to handle unexpected failures or exploits.
+
+Automated Market Maker (AMM) & Liquidity Management
+- Enhance liquidity pool mechanics with dynamic pricing models and slippage control.
+- Implement on-chain price oracles (e.g., Chainlink, Pyth, UMA) to ensure accurate asset pricing.
+- Develop incentivized staking and liquidity mining contracts to attract liquidity providers.
+- Enable concentrated liquidity strategies similar to Uniswap v3.
+
+Cross-Chain & Interoperability Solutions
+- Develop cross-chain bridges to support asset transfers between Ethereum, BSC, Arbitrum, and other EVM chains.
+- Implement wrapped token mechanisms for interoperability with non-EVM blockchains.
+- Integrate multi-signature validation and time-locked transactions for cross-chain operations.
+
+Advanced Trading Features
+   - Integrate machine learning algorithms to automate risk assessment and smart contract optimizations.  
+   - Use reinforcement learning for optimizing smart contract execution and gas efficiency.  
+   - Develop AI-powered trading signals for DeFi applications if applicable.
+
+Governance & DAO Implementation 
+   - Optimize data storage and retrieval for real-time analytics.  
+   - Leverage distributed computing frameworks (Spark, Dask) to handle large-scale blockchain data.  
+   - Ensure low-latency data streaming for live dashboard analytics.
+
+Gas Optimization & Scalability Enhancements
+   - Develop interactive dashboards for internal and external stakeholders.  
+   - Provide periodic reports on platform health, security risks, and market trends.  
+   - Implement visualization tools to simplify complex blockchain data for decision-makers.
+
+Smart Contract Monitoring & Automation
+- Develop real-time contract monitoring tools for anomaly detection and failure prevention.
+- Implement event-driven automation for contract interactions (e.g., automatic yield harvesting).
+- Utilize chain analytics and AI-driven risk assessment to detect potential exploits.
+- Set up automated alerts and reporting dashboards for contract performance tracking.
+
+Technology Stack
+Languages: Solidity, Rust (for cross-chain compatibility), Vyper
+Development Frameworks: Hardhat, Foundry, Truffle, Brownie
+Security & Testing: OpenZeppelin, Echidna, Slither, MythX, Certora
+Oracles & Bridges: Chainlink, Pyth, Wormhole, LayerZero
+Layer-2 Scaling: zkSync, Arbitrum, Optimism
+Automation & Monitoring: Tenderly, The Graph, Sentinel
+Governance Tools: Snapshot, Aragon, Tally
+
+
+DEX Platform Enhancement Project: Comprehensive Task List (3-6 Month Contract)
+
+1. Expand Connected Chain List
+Integrate additional blockchain networks into the existing connected chain list to enhance interoperability and functionality.
+2. Integrate Wallets into Connect Wallet Page
+Objective: Enhance user experience by allowing users to connect multiple wallets seamlessly.
+Wallets to Add:
+MetaMask
+Trust Wallet
+Coinbase Wallet
+Phantom Wallet
+OKX Wallet
+Binance Wallet
+Coin98
+MathWallet
+SafePal
+TokenPocket
+3. Update Trading Page Functionality
+Crypto Token List Enhancement: Update the list of available cryptocurrencies to ensure it includes all current tokens.
+Add 24-Hour Trading Volume: Implement a section displaying the 24-hour trading volume for each token.
+Trading View Graph Updates: Enhance trading view graph features to provide real-time data visualization.
+Order List Table Integration: Develop an order list table that displays active orders with real-time updates.
+Token Icons in Dropdown: Incorporate brand icons for each token in the dropdown menu of the swap section for improved visual recognition.
+
+
+Secure Links Section: Ensure all links in the "Useful Links" section are updated and functional, pointing to relevant resources.
+4. Revamp Dashboard Page
+Theme Update: Redesign the dashboard theme to prominently display key metrics such as 24-Hour Trading Volume, Open Interest, Long Positions, and Short Positions.
+UPL Index Composition Table: Update and optimize the UPL Index Composition table for better clarity and data presentation.
+5. Overhaul Earn/Buy Page
+Token and Modal Links: Revise all token links and associated modal functionality to ensure accuracy and up-to-date information.
+Decentralized/Centralized Services Links: Update links to both decentralized and centralized services to enhance the platform's service offerings.
+Farm Section Addition: Design and add a new section or page dedicated to farming opportunities, providing users with insights and options.
+ 6. Clean Up Testnet Integrations
+Objective: Remove all U2U testnet settings, configurations, and integrations to streamline the platform and avoid confusion for end-users.
+Conclusion
+This task list aims to substantially improve the DEX platform's user experience and functionality over the course of the 4-month contract. Each task will require technical implementation, testing, and validation to ensure a seamless upgrade process for users. Ensure to document all updates and changes for future reference.
+
+DEX Platform Backend Enhancement – Java & Spring Boot Requirements
+
+🔧 1. Blockchain Network Expansion
+Objective: Expand multi-chain compatibility.
+ Design and implement scalable modules to support additional EVM-compatible chains (e.g., BNB Chain, Polygon, Avalanche, Arbitrum, Base, etc.).
+  Integrate RPC connections, chain ID management, and network switching logic.
+  Maintain chain configuration data in a secure and extensible way (YAML, JSON, or DB-driven).
+ Ensure new chains support wallet authentication and smart contract interaction endpoints.
+
+🔐 2. Wallet Integration Support
+Objective: Enable backend APIs for wallet connection and session tracking.
+ Design and expose secure REST APIs for wallet-based authentication (JWT/session token based on wallet signature).
+  Support integration for multiple wallets (MetaMask, Trust Wallet, Coinbase Wallet, Phantom, OKX, Binance, etc.).
+  Implement logic for address verification, wallet type detection, and session state handling.
+ Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
+
+ 📈 3. Trading Page API Enhancements
+Objective:  Serve real-time trading data and historical metrics.
+Extend backend services to:
+ Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
+ Provide 24-hour trading volume metrics for each token.
+ Stream real-time chart data via WebSocket or polling for trading view updates.
+ Serve real-time order book data with pagination and filters (limit/market orders).
+ Return enhanced dropdown metadata (token name, address, icon URL, etc.).
+
+🔗 4. Secure Links & Resource Endpoint Management
+Objective:  Maintain reliable external references.
+ Develop a centralized configuration for all external links (Useful Links, Service Docs, Buy Links, etc.).
+ Provide 24-hour trading volume metrics for each token.
+ Implement an admin-friendly system for validating and updating links dynamically without redeploying.
+
+📊 5. Dashboard Backend Enhancements
+Objective:  Provide key performance and trading metrics.
+ Design APIs to return:
+ 24h Volume, Open Interest, Long/Short Ratios
+ UPL Index Composition Table Data
+ Build logic to aggregate and cache relevant trading data from smart contracts or external APIs (e.g., The Graph, Dune, on-chain scans).
+ Support data formatting and transformation for UI charts and tables.
+
+ 🌾 6. Earn / Buy Page APIs
+Objective:  Backend support for farming and purchase features.
+ Create endpoints to fetch token metadata, farm opportunities (APR, TVL, pool details), and staking options.
+ Enable functionality to link centralized exchange (CEX) purchase paths or DEX aggregators (1inch, Jupiter, etc.).
+ Securely handle modal triggers and token metadata requests.
+
+🧼 7. Testnet Cleanup
+Objective:  Remove legacy testnet dependencies (e.g., U2U).
+ Identify and remove all backend services, configuration files, environments, and constants tied to testnet functionality.
+Validate that no testnet RPCs or contract addresses remain in production code.
+Conduct final testing on production/mainnet environments.
+
+ ✅ General Expectations
+ Ensure all APIs are documented via Swagger/OpenAPI.
+Apply proper authentication and authorization using Spring Security.
+Write unit/integration tests using JUnit and Mockito.
+Follow CI/CD best practices for staging and production deployment.
+Optimize performance and ensure low-latency API responses.
+
+DEX Platform Backend Enhancement – Java & Spring Boot Requirements
+
+🔧 1. Blockchain Network Expansion
+Objective: Expand multi-chain compatibility.
+ Design and implement scalable modules to support additional EVM-compatible chains (e.g., BNB Chain, Polygon, Avalanche, Arbitrum, Base, etc.).
+  Integrate RPC connections, chain ID management, and network switching logic.
+  Maintain chain configuration data in a secure and extensible way (YAML, JSON, or DB-driven).
+ Ensure new chains support wallet authentication and smart contract interaction endpoints.
+
+🔐 2. Wallet Integration Support
+Objective: Enable backend APIs for wallet connection and session tracking.
+ Design and expose secure REST APIs for wallet-based authentication (JWT/session token based on wallet signature).
+  Support integration for multiple wallets (MetaMask, Trust Wallet, Coinbase Wallet, Phantom, OKX, Binance, etc.).
+  Implement logic for address verification, wallet type detection, and session state handling.
+ Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
+
+ 📈 3. Trading Page API Enhancements
+Objective:  Serve real-time trading data and historical metrics.
+Extend backend services to:
+ Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
+ Provide 24-hour trading volume metrics for each token.
+ Stream real-time chart data via WebSocket or polling for trading view updates.
+ Serve real-time order book data with pagination and filters (limit/market orders).
+ Return enhanced dropdown metadata (token name, address, icon URL, etc.).
+
+🔗 4. Secure Links & Resource Endpoint Management
+Objective:  Maintain reliable external references.
+ Develop a centralized configuration for all external links (Useful Links, Service Docs, Buy Links, etc.).
+ Provide 24-hour trading volume metrics for each token.
+ Implement an admin-friendly system for validating and updating links dynamically without redeploying.
+
+📊 5. Dashboard Backend Enhancements
+Objective:  Provide key performance and trading metrics.
+ Design APIs to return:
+ 24h Volume, Open Interest, Long/Short Ratios
+ UPL Index Composition Table Data
+ Build logic to aggregate and cache relevant trading data from smart contracts or external APIs (e.g., The Graph, Dune, on-chain scans).
+ Support data formatting and transformation for UI charts and tables.
+
+ 🌾 6. Earn / Buy Page APIs
+Objective:  Backend support for farming and purchase features.
+ Create endpoints to fetch token metadata, farm opportunities (APR, TVL, pool details), and staking options.
+ Enable functionality to link centralized exchange (CEX) purchase paths or DEX aggregators (1inch, Jupiter, etc.).
+ Securely handle modal triggers and token metadata requests.
+
+🧼 7. Testnet Cleanup
+Objective:  Remove legacy testnet dependencies (e.g., U2U).
+ Identify and remove all backend services, configuration files, environments, and constants tied to testnet functionality.
+Validate that no testnet RPCs or contract addresses remain in production code.
+Conduct final testing on production/mainnet environments.
+
+ ✅ General Expectations
+ Ensure all APIs are documented via Swagger/OpenAPI.
+Apply proper authentication and authorization using Spring Security.
+Write unit/integration tests using JUnit and Mockito.
+Follow CI/CD best practices for staging and production deployment.
+Optimize performance and ensure low-latency API responses.
+
+DEX Platform Backend Enhancement – Java & Spring Boot Requirements
+
+🔧 1. Blockchain Network Expansion
+Objective: Expand multi-chain compatibility.
+ Design and implement scalable modules to support additional EVM-compatible chains (e.g., BNB Chain, Polygon, Avalanche, Arbitrum, Base, etc.).
+  Integrate RPC connections, chain ID management, and network switching logic.
+  Maintain chain configuration data in a secure and extensible way (YAML, JSON, or DB-driven).
+ Ensure new chains support wallet authentication and smart contract interaction endpoints.
+
+🔐 2. Wallet Integration Support
+Objective: Enable backend APIs for wallet connection and session tracking.
+ Design and expose secure REST APIs for wallet-based authentication (JWT/session token based on wallet signature).
+  Support integration for multiple wallets (MetaMask, Trust Wallet, Coinbase Wallet, Phantom, OKX, Binance, etc.).
+  Implement logic for address verification, wallet type detection, and session state handling.
+ Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
+
+ 📈 3. Trading Page API Enhancements
+Objective:  Serve real-time trading data and historical metrics.
+Extend backend services to:
+ Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
+ Provide 24-hour trading volume metrics for each token.
+ Stream real-time chart data via WebSocket or polling for trading view updates.
+ Serve real-time order book data with pagination and filters (limit/market orders).
+ Return enhanced dropdown metadata (token name, address, icon URL, etc.).
+
+🔗 4. Secure Links & Resource Endpoint Management
+Objective:  Maintain reliable external references.
+ Develop a centralized configuration for all external links (Useful Links, Service Docs, Buy Links, etc.).
+ Provide 24-hour trading volume metrics for each token.
+ Implement an admin-friendly system for validating and updating links dynamically without redeploying.
+
+📊 5. Dashboard Backend Enhancements
+Objective:  Provide key performance and trading metrics.
+ Design APIs to return:
+ 24h Volume, Open Interest, Long/Short Ratios
+ UPL Index Composition Table Data
+ Build logic to aggregate and cache relevant trading data from smart contracts or external APIs (e.g., The Graph, Dune, on-chain scans).
+ Support data formatting and transformation for UI charts and tables.
+
+ 🌾 6. Earn / Buy Page APIs
+Objective:  Backend support for farming and purchase features.
+ Create endpoints to fetch token metadata, farm opportunities (APR, TVL, pool details), and staking options.
+ Enable functionality to link centralized exchange (CEX) purchase paths or DEX aggregators (1inch, Jupiter, etc.).
+ Securely handle modal triggers and token metadata requests.
+
+🧼 7. Testnet Cleanup
+Objective:  Remove legacy testnet dependencies (e.g., U2U).
+ Identify and remove all backend services, configuration files, environments, and constants tied to testnet functionality.
+Validate that no testnet RPCs or contract addresses remain in production code.
+Conduct final testing on production/mainnet environments.
+
+ ✅ General Expectations
+ Ensure all APIs are documented via Swagger/OpenAPI.
+Apply proper authentication and authorization using Spring Security.
+Write unit/integration tests using JUnit and Mockito.
+Follow CI/CD best practices for staging and production deployment.
+Optimize performance and ensure low-latency API responses.
+
+DEX Platform Backend Enhancement – Java & Spring Boot Requirements
+
+🔧 1. Blockchain Network Expansion
+Objective: Expand multi-chain compatibility.
+ Design and implement scalable modules to support additional EVM-compatible chains (e.g., BNB Chain, Polygon, Avalanche, Arbitrum, Base, etc.).
+  Integrate RPC connections, chain ID management, and network switching logic.
+  Maintain chain configuration data in a secure and extensible way (YAML, JSON, or DB-driven).
+ Ensure new chains support wallet authentication and smart contract interaction endpoints.
+
+🔐 2. Wallet Integration Support
+Objective: Enable backend APIs for wallet connection and session tracking.
+ Design and expose secure REST APIs for wallet-based authentication (JWT/session token based on wallet signature).
+  Support integration for multiple wallets (MetaMask, Trust Wallet, Coinbase Wallet, Phantom, OKX, Binance, etc.).
+  Implement logic for address verification, wallet type detection, and session state handling.
+ Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
+
+ 📈 3. Trading Page API Enhancements
+Objective:  Serve real-time trading data and historical metrics.
+Extend backend services to:
+ Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
+ Provide 24-hour trading volume metrics for each token.
+ Stream real-time chart data via WebSocket or polling for trading view updates.
+ Serve real-time order book data with pagination and filters (limit/market orders).
+ Return enhanced dropdown metadata (token name, address, icon URL, etc.).
+
+🔗 4. Secure Links & Resource Endpoint Management
+Objective:  Maintain reliable external references.
+ Develop a centralized configuration for all external links (Useful Links, Service Docs, Buy Links, etc.).
+ Provide 24-hour trading volume metrics for each token.
+ Implement an admin-friendly system for validating and updating links dynamically without redeploying.
+
+📊 5. Dashboard Backend Enhancements
+Objective:  Provide key performance and trading metrics.a
+ Securely handle modal triggers and token metadata requests.
+
+🧼 7. Testnet Cleanup
+Objective:  Remove legacy testnet dependencies (e.g., U2U).
+ Identify and remove all backend services, configuration files, environments, and constants tied to testnet functionality.
+Validate that no testnet RPCs or contract addresses remain in production code.
+Conduct final testing on production/mainnet environments.
+
+ ✅ General Expectations
+ Ensure all APIs are documented via Swagger/OpenAPI.
+Apply proper authentication and authorization using Spring Security.
+Write unit/integration tests using JUnit and Mockito.
+Follow CI/CD best practices for staging and production deployment.
+Optimize performance and ensure low-latency API responses.
+
+
+DEX Platform Backend Enhancement – Java & Spring Boot Requirements
+
+🔧 1. Blockchain Network Expansion
+Objective: Expand multi-chain compatibility.
+ Design and implement scalable modules to support additional EVM-compatible chains (e.g., BNB Chain, Polygon, Avalanche, Arbitrum, Base, etc.).
+  Integrate RPC connections, chain ID management, and network switching logic.
+  Maintain chain configuration data in a secure and extensible way (YAML, JSON, or DB-driven).
+ Ensure new chains support wallet authentication and smart contract interaction endpoints.
+
+🔐 2. Wallet Integration Support
+Objective: Enable backend APIs for wallet connection and session tracking.
+ Design and expose secure REST APIs for wallet-based authentication (JWT/session token based on wallet signature).
+  Support integration for multiple wallets (MetaMask, Trust Wallet, Coinbase Wallet, Phantom, OKX, Binance, etc.).
+  Implement logic for address verification, wallet type detection, and session state handling.
+ Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
+
+ 📈 3. Trading Page API Enhancements
+Objective:  Serve real-time trading data and historical metrics.
+Extend backend services to:
+ Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
+ Provide 24-hour trading volume metrics for each token.
+ Stream real-time chart data via WebSocket or polling for trading view updates.
+ Serve real-time order book data with pagination and filters (limit/market orders).
+ Return enhanced dropdown metadata (token name, address, icon URL, etc.).
+
+🔗 4. Secure Links & Resource Endpoint Management
+Objective:  Maintain reliable external references.
+ Develop a centralized configuration for all external links (Useful Links, Service Docs, Buy Links, etc.).
+ Provide 24-hour trading volume metrics for each token.
+ Implement an admin-friendly system for validating and updating links dynamically without redeploying.
+
+📊 5. Dashboard Backend Enhancements
+Objective:  Provide key performance and trading metrics.
+ Design APIs to return:
+ 24h Volume, Open Interest, Long/Short Ratios
+ UPL Index Composition Table Data
+ Build logic to aggregate and cache relevant trading data from smart contracts or external APIs (e.g., The Graph, Dune, on-chain scans).
+ Support data formatting and transformation for UI charts and tables.
+
+ 🌾 6. Earn / Buy Page APIs
+Objective:  Backend support for farming and purchase features.
+ Create endpoints to fetch token metadata, farm opportunities (APR, TVL, pool details), and staking options.
+ Enable functionality to link centralized exchange (CEX) purchase paths or DEX aggregators (1inch, Jupiter, etc.).
+ Securely handle modal triggers and token metadata requests.
+
+🧼 7. Testnet Cleanup
+Objective:  Remove legacy testnet dependencies (e.g., U2U).
+ Identify and remove all backend services, configuration files, environments, and constants tied to testnet functionality.
+Validate that no testnet RPCs or contract addresses remain in production code.
+Conduct final testing on production/mainnet environments.
+
+ ✅ General Expectations
+ Ensure all APIs are documented via Swagger/OpenAPI.
+Apply proper authentication and authorization using Spring Security.
+Write unit/integration tests using JUnit and Mockito.
+Follow CI/CD best practices for staging and production deployment.
+Optimize performance and ensure low-latency API responses.
+
+
+DEX Platform Backend Enhancement – Java & Spring Boot Requirements
+
+🔧 1. Blockchain Network Expansion
+Objective: Expand multi-chain compatibility.
+ Design and implement scalable modules to support additional EVM-compatible chains (e.g., BNB Chain, Polygon, Avalanche, Arbitrum, Base, etc.).
+  Integrate RPC connections, chain ID management, and network switching logic.
+  Maintain chain configuration data in a secure and extensible way (YAML, JSON, or DB-driven).
+ Ensure new chains support wallet authentication and smart contract interaction endpoints.
+
+🔐 2. Wallet Integration Support
+Objective: Enable backend APIs for wallet connection and session tracking.
+ Design and expose secure REST APIs for wallet-based authentication (JWT/session token based on wallet signature).
+  Support integration for multiple wallets (MetaMask, Trust Wallet, Coinbase Wallet, Phantom, OKX, Binance, etc.).
+  Implement logic for address verification, wallet type detection, and session state handling.
+ Store or cache user session and activity metadata securely (e.g., Redis, PostgreSQL).
+
+ 📈 3. Trading Page API Enhancements
+Objective:  Serve real-time trading data and historical metrics.
+Extend backend services to:
+ Fetch and update token list dynamically via APIs (e.g., CoinGecko, Moralis, DEX APIs).
+ Provide 24-hour trading volume metrics for each token.
+ Stream real-time chart data via WebSocket or polling for trading view updates.
+ Serve real-time order book data with pagination and filters (limit/market orders).
+ Return enhanced dropdown metadata (token name, address, icon URL, etc.).
+
+🔗 4. Secure Links & Resource Endpoint Management
+Objective:  Maintain reliable external references.
+ Develop a centralized configuration for all external links (Useful Links, Service Docs, Buy Links, etc.).
+ Provide 24-hour trading volume metrics for each token.
+ Implement an admin-friendly system for validating and updating links dynamically without redeploying.
+
+📊 5. Dashboard Backend Enhancements
+Objective:  Provide key performance and trading metrics.
+ Design APIs to return:
+ 24h Volume, Open Interest, Long/Short Ratios
+ UPL Index Composition Table Data
+ Build logic to aggregate and cache relevant trading data from smart contracts or external APIs (e.g., The Graph, Dune, on-chain scans).
+ Support data formatting and transformation for UI charts and tables.
+
+ 🌾 6. Earn / Buy Page APIs
+Objective:  Backend support for farming and purchase features.
+ Create endpoints to fetch token metadata, farm opportunities (APR, TVL, pool details), and staking options.
+ Enable functionality to link centralized exchange (CEX) purchase paths or DEX aggregators (1inch, Jupiter, etc.).
+ Securely handle modal triggers and token metadata requests.
+
+🧼 7. Testnet Cleanup
+Objective:  Remove legacy testnet dependencies (e.g., U2U).
+ Identify and remove all backend services, configuration files, environments, and constants tied to testnet functionality.
+Validate that no testnet RPCs or contract addresses remain in production code.
+Conduct final testing on production/mainnet environments.
+
+ ✅ General Expectations
+ Ensure all APIs are documented via Swagger/OpenAPI.
+Apply proper authentication and authorization using Spring Security.
+Write unit/integration tests using JUnit and Mockito.
+Follow CI/CD best practices for staging and production deployment.
+Optimize performance and ensure low-latency API responses.
+
+

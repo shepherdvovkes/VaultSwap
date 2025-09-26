@@ -1,0 +1,117 @@
+# Kibana Configuration for Attack Simulation Monitoring
+server.name: "attack-simulation-kibana"
+server.host: "0.0.0.0"
+server.port: 5601
+
+elasticsearch.hosts: ["http://elasticsearch:9200"]
+elasticsearch.username: kibana_system
+elasticsearch.password: ""
+
+# Security settings
+xpack.security.enabled: false
+xpack.encryptedSavedObjects.encryptionKey: "attack-simulation-encryption-key-32-chars"
+
+# Logging
+logging.appenders:
+  file:
+    type: file
+    fileName: /usr/share/kibana/logs/kibana.log
+    layout:
+      type: json
+logging.loggers:
+  - name: attack-simulation
+    level: info
+    appenders: [file]
+
+# Monitoring
+monitoring.ui.container.elasticsearch.enabled: true
+monitoring.ui.container.logstash.enabled: false
+
+# Custom dashboards for attack simulation
+kibana.defaultAppId: "dashboards"
+kibana.legacy.dashboardSettings.enabled: true
+
+# Index patterns for attack simulation
+kibana.indexPatterns:
+  - pattern: "attack-logs-*"
+    timeFieldName: "timestamp"
+  - pattern: "mev-attacks-*"
+    timeFieldName: "timestamp"
+  - pattern: "flash-loan-attacks-*"
+    timeFieldName: "timestamp"
+  - pattern: "oracle-attacks-*"
+    timeFieldName: "timestamp"
+
+# Saved objects for attack simulation dashboards
+kibana.savedObjects:
+  - type: "dashboard"
+    id: "attack-simulation-dashboard"
+    attributes:
+      title: "Attack Simulation Dashboard"
+      description: "Comprehensive dashboard for monitoring attack simulations"
+      panelsJSON: |
+        [
+          {
+            "id": "attack-overview",
+            "type": "visualization",
+            "gridData": {"x": 0, "y": 0, "w": 12, "h": 8}
+          },
+          {
+            "id": "mev-attacks",
+            "type": "visualization", 
+            "gridData": {"x": 0, "y": 8, "w": 6, "h": 6}
+          },
+          {
+            "id": "flash-loan-attacks",
+            "type": "visualization",
+            "gridData": {"x": 6, "y": 8, "w": 6, "h": 6}
+          },
+          {
+            "id": "oracle-attacks",
+            "type": "visualization",
+            "gridData": {"x": 0, "y": 14, "w": 12, "h": 6}
+          }
+        ]
+
+# Custom visualizations for attack simulation
+kibana.visualizations:
+  - type: "area"
+    id: "attack-overview"
+    attributes:
+      title: "Attack Overview"
+      visState: |
+        {
+          "type": "area",
+          "params": {
+            "grid": {"categoryLines": false, "style": {"color": "#eee"}},
+            "categoryAxes": [{"id": "CategoryAxis-1", "type": "category", "position": "bottom", "show": true, "style": {}}],
+            "valueAxes": [{"id": "ValueAxis-1", "name": "LeftAxis-1", "type": "value", "position": "left", "show": true, "style": {}}],
+            "seriesParams": [{"data": {"id": "1", "label": "Attack Count"}, "type": "area", "mode": "stacked", "show": true, "valueAxis": "ValueAxis-1"}]
+          },
+          "aggs": [
+            {"id": "1", "type": "count", "schema": "metric", "params": {}},
+            {"id": "2", "type": "date_histogram", "schema": "segment", "params": {"field": "timestamp", "interval": "auto", "customInterval": "2h", "min_doc_count": 1, "extended_bounds": {}}}
+          ]
+        }
+      uiStateJSON: "{}"
+      description: "Overview of all attack types over time"
+      version: 1
+      kibanaSavedObjectMeta: {
+        "searchSourceJSON": "{\"index\":\"attack-logs-*\",\"query\":{\"match_all\":{}},\"filter\":[]}"
+      }
+
+# Custom index patterns
+kibana.indexPatterns:
+  - id: "attack-logs-pattern"
+    attributes:
+      title: "attack-logs-*"
+      timeFieldName: "timestamp"
+      fields: |
+        [
+          {"name": "timestamp", "type": "date", "count": 0, "scripted": false, "searchable": true, "aggregatable": true, "readFromDocValues": true},
+          {"name": "attack_type", "type": "string", "count": 0, "scripted": false, "searchable": true, "aggregatable": true, "readFromDocValues": true},
+          {"name": "attacker_id", "type": "string", "count": 0, "scripted": false, "searchable": true, "aggregatable": true, "readFromDocValues": true},
+          {"name": "success", "type": "boolean", "count": 0, "scripted": false, "searchable": true, "aggregatable": true, "readFromDocValues": true},
+          {"name": "profit", "type": "number", "count": 0, "scripted": false, "searchable": true, "aggregatable": true, "readFromDocValues": true},
+          {"name": "detection_time", "type": "number", "count": 0, "scripted": false, "searchable": true, "aggregatable": true, "readFromDocValues": true}
+        ]

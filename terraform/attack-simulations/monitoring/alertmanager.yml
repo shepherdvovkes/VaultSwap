@@ -1,0 +1,90 @@
+# Alertmanager Configuration for Attack Simulation Monitoring
+global:
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alerts@dex-attack-sim.local'
+  smtp_auth_username: 'alerts@dex-attack-sim.local'
+  smtp_auth_password: 'password'
+
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'web.hook'
+  routes:
+  - match:
+      alertname: 'HighAttackSuccessRate'
+    receiver: 'critical-alerts'
+  - match:
+      alertname: 'MEVAttackDetected'
+    receiver: 'mev-alerts'
+  - match:
+      alertname: 'FlashLoanAttackDetected'
+    receiver: 'flash-loan-alerts'
+  - match:
+      alertname: 'OracleManipulationDetected'
+    receiver: 'oracle-alerts'
+
+receivers:
+- name: 'web.hook'
+  webhook_configs:
+  - url: 'http://localhost:5001/'
+
+- name: 'critical-alerts'
+  email_configs:
+  - to: 'security@dex-attack-sim.local'
+    subject: 'CRITICAL: High Attack Success Rate Detected'
+    body: |
+      High attack success rate detected in DEX attack simulation.
+      
+      Alert: {{ .GroupLabels.alertname }}
+      Instance: {{ .GroupLabels.instance }}
+      Value: {{ .GroupLabels.value }}
+      
+      Please investigate immediately.
+
+- name: 'mev-alerts'
+  email_configs:
+  - to: 'mev-team@dex-attack-sim.local'
+    subject: 'MEV Attack Detected'
+    body: |
+      MEV attack detected in simulation.
+      
+      Alert: {{ .GroupLabels.alertname }}
+      Attack Type: {{ .GroupLabels.attack_type }}
+      Instance: {{ .GroupLabels.instance }}
+      
+      Investigation required.
+
+- name: 'flash-loan-alerts'
+  email_configs:
+  - to: 'flash-loan-team@dex-attack-sim.local'
+    subject: 'Flash Loan Attack Detected'
+    body: |
+      Flash loan attack detected in simulation.
+      
+      Alert: {{ .GroupLabels.alertname }}
+      Attack Type: {{ .GroupLabels.attack_type }}
+      Instance: {{ .GroupLabels.instance }}
+      
+      Investigation required.
+
+- name: 'oracle-alerts'
+  email_configs:
+  - to: 'oracle-team@dex-attack-sim.local'
+    subject: 'Oracle Manipulation Detected'
+    body: |
+      Oracle manipulation attack detected in simulation.
+      
+      Alert: {{ .GroupLabels.alertname }}
+      Attack Type: {{ .GroupLabels.attack_type }}
+      Instance: {{ .GroupLabels.instance }}
+      
+      Investigation required.
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']

@@ -1,0 +1,70 @@
+# Elasticsearch Configuration for Attack Simulation Logs
+cluster.name: "attack-simulation-cluster"
+node.name: "attack-simulation-node"
+path.data: /usr/share/elasticsearch/data
+path.logs: /usr/share/elasticsearch/logs
+
+network.host: 0.0.0.0
+http.port: 9200
+
+discovery.type: single-node
+
+# Security settings
+xpack.security.enabled: false
+xpack.security.enrollment.enabled: false
+
+# Memory settings
+bootstrap.memory_lock: true
+
+# Index settings
+action.auto_create_index: true
+action.destructive_requires_name: false
+
+# Logging settings
+logger.level: INFO
+logger.org.elasticsearch.transport: DEBUG
+
+# Performance settings
+indices.memory.index_buffer_size: 20%
+indices.queries.cache.size: 10%
+indices.fielddata.cache.size: 20%
+
+# Attack simulation specific settings
+index.mapping.total_fields.limit: 10000
+index.mapping.depth.limit: 20
+index.mapping.nested_fields.limit: 100
+
+# Custom analyzers for attack logs
+index.analysis.analyzer.attack_analyzer:
+  type: custom
+  tokenizer: standard
+  filter: [lowercase, stop, snowball]
+
+# Index templates for attack simulation data
+index.template.attack_logs:
+  index_patterns: ["attack-logs-*"]
+  settings:
+    number_of_shards: 1
+    number_of_replicas: 0
+    index.refresh_interval: 30s
+  mappings:
+    properties:
+      timestamp:
+        type: date
+      attack_type:
+        type: keyword
+      attacker_id:
+        type: keyword
+      success:
+        type: boolean
+      profit:
+        type: float
+      detection_time:
+        type: float
+      message:
+        type: text
+        analyzer: attack_analyzer
+      level:
+        type: keyword
+      service:
+        type: keyword
