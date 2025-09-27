@@ -671,3 +671,4 @@ trap 'error "Troubleshooting interrupted"; exit 1' INT TERM
 
 # Run main function
 main "$@"
+

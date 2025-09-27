@@ -396,3 +396,4 @@ terraform destroy -var="environment=$ENVIRONMENT"
 # 3. Notify team
 # Send alerts to on-call team
 ```
+
