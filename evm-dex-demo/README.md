@@ -9,12 +9,12 @@ This platform encompasses key functionalities such as pooling, liquidity provisi
 
 ## How to run the project?
 
-#### Are you ready to enter the Web3 Era? Let's explore a decentralized world today!
+#### 🚀 Are you ready to enter the Web3 Era? Let's explore a decentralized world today!
 
 ### Clone
 
 ```
-   git clone https://github.com/jasonharry1988502/evm-dex-demo
+   git clone https://bitbucket.org/jasonharry1998502/evm-dex-demo
 ```
 ### Change directory
 
